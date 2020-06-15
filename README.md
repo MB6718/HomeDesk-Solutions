@@ -65,9 +65,13 @@ Request:
 
 ### Авторы <a name="authors"></a>
 
-* __Max [MB6718] Bee__
-* __Gift-Dar__
-* __Xandarel__
+Состав команды __White Studio:__
+* ![contrib_images](https://avatars2.githubusercontent.com/u/61043468?s=400&v=4){:height="24px" width="24px"}
+[__Max [MB6718] Bee__](https://github.com/MB6718) (Belkin Maxim)
+* ![contrib_images](https://avatars3.githubusercontent.com/u/64541060?s=400&v=4){:height="24px" width="24px"}
+[__Gift-Dar__](https://github.com/Gift-Dar) (Варганова Дарья)
+* ![contrib_images](https://avatars1.githubusercontent.com/u/44629770?s=400&v=4){:height="24px" width="24px"}
+[__Xandarel__](https://github.com/Xandarel) (Бордюг Александр)
 
 ### Лицензия <a name="license"></a>
 
