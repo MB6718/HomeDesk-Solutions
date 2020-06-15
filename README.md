@@ -58,16 +58,17 @@ Request:
 
 ### Построен с использованием <a name="build_with"></a>
 
-* [Python 3.8.3](https://img.shields.io/badge/Python-v3.8-blue) - интерпретатор языка Python не ниже версии 3.8
-* [Flask 1.1.12](https://img.shields.io/badge/framework-Flask_1.1.12-ff69b4) - фреймворк для создания веб-приложений на языке Python
+* [Python 3.8.3](https://www.python.org/downloads/release/python-383rc1/) - интерпретатор языка Python не ниже версии 3.8
+* [Flask 1.1.12](https://flask.palletsprojects.com/en/1.1.x/) - фреймворк для создания веб-приложений на языке Python
 
-Остальные зависимые модули и пакеты см. в файл [requirements.txt]()
+Остальные зависимые модули и пакеты см. в файл [requirements.txt](https://github.com/MB6718/HomeDesk-Solutions/blob/fix/readme/requirements.txt)
 
 ### Авторы <a name="authors"></a>
 
-* __Max [MB6718] Bee__
-* __Gift-Dar__
-* __Xandarel__
+Состав команды __White Studio:__
+* <img src="https://avatars2.githubusercontent.com/u/61043468?s=400&v=4" width="24" height="24"/> [__Max [MB6718] Bee__](https://github.com/MB6718) (Belkin Maxim)
+* <img src="https://avatars3.githubusercontent.com/u/64541060?s=400&v=4" width="24" height="24"/> [__Gift-Dar__](https://github.com/Gift-Dar) (Варганова Дарья)
+* <img src="https://avatars1.githubusercontent.com/u/44629770?s=400&v=4" width="24" height="24"/> [__Xandarel__](https://github.com/Xandarel) (Бордюг Александр)
 
 ### Лицензия <a name="license"></a>
 
