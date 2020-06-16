@@ -13,6 +13,17 @@
 * [Спецификация (Формат описания API запросов/ответов)](#apispec)
 	* [POST /auth/login](#login)
 	* [POST /auth/logout](#logout)
+	* [POST /users](#usersreg)
+	* [GET /categories](#getcat)
+	* [GET /categories/&lt;int:category_id&gt;](#getcat_id)
+	* [POST /categories](#postcat)
+	* [PATCH /categories/&lt;int:category_id&gt;](#patchcat_id)
+	* [DELETE /categories/&lt;int:category_id&gt;](#deletecat_id)
+	* [POST /transactions](#posttrans)
+	* [GET /transactions/&lt;int:transaction_id&gt;](#gettrans_id)
+	* [PATCH /transactions/&lt;int:transaction_id&gt;](#patchtrans_id)
+	* [DELETE /transactions/&lt;int:transaction_id&gt;](#deltrans_id)
+	* [GET /report](#getreport)
 * [Примеры API запросов](#example)
 * [Построен с использованием](#build_with)
 * [Авторы](#authors)
@@ -37,7 +48,7 @@
 ### Спецификация (Формат описания API запросов/ответов): <a name="apispec"></a>
 * запросы и ответы представлены в JSON-подобной структуре и описывают JSON-документы
 * через двоеточие указываются типы полей
-* запись вида type? обозначает, что поле необязательное и может отсутствовать
+* запись вида ?type обозначает, что поле необязательное и может отсутствовать
 * запись вида [type] обозначает список значений типа type
 
 <a name="login"></a> 
@@ -45,14 +56,272 @@
 
 **POST** &rArr; `/auth/login`  
 Request:
-```json
+```
 {
-  "email": str,
-  "password": str
+  "email" : str,
+  "password" : str
 }
 ```
 <a name="logout"></a>
-**POST** &rArr; `/auth/logout`
+**POST** &rArr; `/auth/logout`  
+
+<a name="usersreg"></a>
+&#9660; Регистрация нового пользователя в системе.  
+
+**POST** &rArr; `/users`  
+Request:
+```
+{
+    "first_name" : str
+    "last_name" : str
+    "email" : str
+    "password" : str
+}
+```
+Response:
+```
+{
+    "id" : int, 
+    "first_name" : str
+    "last_name" : str
+    "email" : str
+}
+```
+<a name="getcat"></a>
+&#9660; Получение информации о всех имеющихся категориях пользователя по его ID в текущей сессии. Доступно только аутентифицированным пользователям. 
+
+**GET** &rArr; `/categories`  
+Response:
+```
+[
+	{
+		"id" : int,
+		"name" : str,
+		"subcategory" : [
+			{
+				"id" : int,
+				"name" : str,
+				"subcategory" : [ ]
+			},
+			{
+				… n …
+			}
+		],
+	},
+	{
+		… n …
+	}
+]
+```
+
+<a name="getcat_id"></a>
+&#9660; Возвращаем полное дерево категорий начиная с категории category_id. Если категория не содержит дочерних категорий, выводим только её. 
+
+**GET** &rArr; `/categories/<int:category_id>`  
+Response:
+```
+{
+	"id" : <category_id>,
+	"name" : str,
+	"subcategory" : [
+		{
+			"id" : int,
+			"name" : str,
+			"subcategory" : [ ]
+				 
+		},
+		{
+			… n …
+		}
+    ]
+}
+```
+
+<a name="postcat"></a>
+&#9660; Добавление категории, если категория удачно создана или уже существует, то возвращаем полное дерево категорий начиная с родителя (если передан в request) и заканчивая "category_name" категорией.  
+
+**POST** &rArr; `/categories`  
+Request:
+```
+{
+	"name" : str
+	"parent_id" : ?int 
+}
+```
+Response (Если указан "parent_id"):
+```
+{
+	"id" : int,
+	"name" : str,
+	"subcategory" : 
+	{
+		"id" : int,
+		"name" : str,
+	}
+}
+```
+Response (в иных случаях):
+```
+{
+	"id" : int,
+	"name" : str,
+}
+```
+
+<a name="patchcat_id"></a>
+&#9660; Изменить категорию может только создатель. Обновляем значение parent_id в связи, если в request пришёл id нового родителя. 
+
+**PATCH** &rArr; `/categories/<int:category_id>`  
+Request:
+```
+{
+	"name" : str
+	"parent_id" : ?int 
+}
+```
+Response (Если указан "parent_id"):
+```
+{
+	"id" : int,
+	"name" : str,
+	"subcategory" : 
+	{
+		"id" : int,
+		"name" : str,
+	}
+}
+```
+Response (в иных случаях):
+```
+{
+	"id" : int,
+	"name" : str,
+}
+```
+
+<a name="deletecat_id"></a>
+&#9660; Удаляем связь между пользователем и этой категорией и каскадно все наследующиеся от нее категории (связи). 
+
+**DELETE** &rArr; `/categories/<int:category_id>`
+
+<a name="posttrans"></a>
+&#9660; Добавление финансовой операции, доступно только аутентифицированному пользователю.
+
+**POST** &rArr; `/transactions`  
+Request:
+```
+{
+	"type" : str
+	"amount" : str (дробное число типа 189945,56)
+	"comment" : ?str
+	"date" : ?int (timestamp, default=current_date/time)
+	"category_id" : ?int
+}
+```
+Response:
+```
+{
+	"id" : int  
+	"type" : str (expenses - расходы; income - доходы)
+	"amount" : str (дробное число типа 189945,56)
+	"comment" : ?str
+	"date" : ?int (timestamp) 
+	"category_id" : ?int 
+}
+```
+
+<a name="gettrans_id"></a>
+&#9660; Получение информации об указанной финансовой операций по transaction_id.
+
+**GET** &rArr; `/transactions/<int:transaction_id>`  
+Response:
+```
+{
+	"id" : int 
+	"type" : str (expenses - расходы; income - доходы)
+	"amount" : str (дробное число типа 189945,56)
+	"comment" : ?str
+	"date" : int (timestamp) 
+	"category_id" : int
+}
+```
+
+<a name="patchtrans_id"></a>
+&#9660; Изменять транзакцию может только аутентифицированный и создавший её пользователь.
+
+**PATCH** &rArr; `/transactions/<int:transaction_id>`  
+Request:
+```
+{
+	"type" : ?str (expenses - расходы; income - доходы)
+	"amount" : ?str (дробное число типа 189945,56)
+	"comment" : ?str
+	"date" : ?str (timestamp) 
+	"category_id" : ?int 
+}
+```
+Response:
+```
+{
+	"id" : int
+	"type : str (expenses - расходы; income - доходы)
+	"amount" : str (дробное число типа 189945,56)
+	"comment" : ?str
+	"date" : str (timestamp) 
+	"category_id" : ?int
+}
+```
+
+<a name="deltrans_id"></a>
+&#9660; Удалить транзакцию может только аутентифицированный и создавший её пользователь.
+
+**DELETE** &rArr; `/transactions/<int:transaction_id>`
+
+<a name="getreport"></a>
+&#9660; Получение отчета, параметры начальная дата, конечная дата и категория являются необязательными. Если категория не указана, то в отчет включаются все операции за указанный период. Для каждой операции отдается дата, сумма, описание и категория (вместе со всеми родительскими категориями). Список отсортирован по дате и отдается с пагинацией.
+
+**GET** &rArr; `/report`  
+Request:
+```
+Query params:
+	from = ?str
+	to = ?str
+	type = ?str (expenses - расходы; income - доходы)
+	category_id = ?int
+	page_size = ?int (default = 20)
+	page = ?int (default = 1)
+```
+Response:
+```
+{	
+	"page_count" : int  
+	"page" : int 
+	"page_size" : int 
+	"item_count" : int
+	""total" : str (дробное число типа 189945,56)
+	"transactions" : [
+		{
+			"id" : int
+			"amount" : str (дробное число типа 189945,56)
+			"comment" : ?str
+			"type" : str (expenses - расходы; income - доходы)
+			"date" : str (timestamp) 
+			"category" : [
+       				{
+           					"id" : int,
+          					"name" : str       
+				},
+				{
+       					… n …
+				}
+   			]
+		},
+		{
+			… n …
+		}
+	]
+} 
+```
 
 ### Примеры API запросов <a name="example"></a>
 
