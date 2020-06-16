@@ -24,7 +24,7 @@
 	* [PATCH /transactions/&lt;int:transaction_id&gt;](#patchtrans_id)
 	* [DELETE /transactions/&lt;int:transaction_id&gt;](#deltrans_id)
 	* [GET /report](#getreport)
-* [Примеры API запросов](#example)
+* [Примеры API запросов и Тесты](#example)
 * [Построен с использованием](#build_with)
 * [Авторы](#authors)
 * [Лицензия](#license)
@@ -42,8 +42,26 @@
 ### Подготовка и запуск <a name="firstrun"></a>
 Пошаговая инструкция по запуску приложения на локальном компьютере:
 * под Windows
-	1. Скачать архив с релизом приложения и распаковать в любую удобную папку
-	2. ...
+	1. Скачать архив с исходным кодом и распаковать в любую удобную папку
+	2. В корне проекта создать файл .env, содержащий четыре строки:
+		```bash
+		PYTHONPATH=src # путь к исходнику проекта
+		DB_FILE=db.sqlite # путь к файлу базы данных SQLite
+		SECRET_KEY=1234567890 # секретный ключ (!) заменить на свой
+		```
+	3. Выполнить скрипт для создания пустой БД
+		```bash
+		python create_db.py # после выполнения появится файл БД с именем "db.sqlite"
+		```
+	4. Создать и запустить виртуальное окружение в корне проекта, подтянуть необходимые зависимости
+		```bash
+		python -m venv .venv # создаём виртуальное окружение
+		.venv\Scripts\activate.bat # активируем виртуальное окружение
+		(.venv) python -V # проверяем версию интерпретатора Python, убеждаясь в работе окружения
+		(.venv) pip install -r requirements.txt # устанавливаем необходимые пакеты и формируем зависимости
+		(.venv) flask run # запустим локальный сервер Flask
+		```
+	5. Можно приступать к тестированию API функционала приложения
 
 ### Спецификация (Формат описания API запросов/ответов): <a name="apispec"></a>
 * запросы и ответы представлены в JSON-подобной структуре и описывают JSON-документы
@@ -72,19 +90,19 @@ Request:
 Request:
 ```
 {
-    "first_name" : str
-    "last_name" : str
-    "email" : str
-    "password" : str
+  "first_name" : str
+  "last_name" : str
+  "email" : str
+  "password" : str
 }
 ```
 Response:
 ```
 {
-    "id" : int, 
-    "first_name" : str
-    "last_name" : str
-    "email" : str
+  "id" : int, 
+  "first_name" : str
+  "last_name" : str
+  "email" : str
 }
 ```
 <a name="getcat"></a>
@@ -94,23 +112,23 @@ Response:
 Response:
 ```
 [
-	{
-		"id" : int,
-		"name" : str,
-		"subcategory" : [
-			{
-				"id" : int,
-				"name" : str,
-				"subcategory" : [ ]
-			},
-			{
-				… n …
-			}
-		],
-	},
-	{
-		… n …
-	}
+  {
+    "id" : int,
+    "name" : str,
+    "subcategory" : [
+      {
+        "id" : int,
+        "name" : str,
+        "subcategory" : [ ]
+      },
+      {
+        … n …
+      }
+    ],
+  },
+  {
+    … n …
+  }
 ]
 ```
 
@@ -121,19 +139,18 @@ Response:
 Response:
 ```
 {
-	"id" : <category_id>,
-	"name" : str,
-	"subcategory" : [
-		{
-			"id" : int,
-			"name" : str,
-			"subcategory" : [ ]
-				 
-		},
-		{
-			… n …
-		}
-    ]
+  "id" : <category_id>,
+  "name" : str,
+  "subcategory" : [
+    {
+      "id" : int,
+      "name" : str,
+      "subcategory" : [ ]
+    },
+    {
+      … n …
+    }
+  ]
 }
 ```
 
@@ -144,27 +161,27 @@ Response:
 Request:
 ```
 {
-	"name" : str
-	"parent_id" : ?int 
+  "name" : str
+  "parent_id" : ?int 
 }
 ```
 Response (Если указан "parent_id"):
 ```
 {
-	"id" : int,
-	"name" : str,
-	"subcategory" : 
-	{
-		"id" : int,
-		"name" : str,
-	}
+  "id" : int,
+  "name" : str,
+  "subcategory" : 
+  {
+    "id" : int,
+    "name" : str,
+  }
 }
 ```
 Response (в иных случаях):
 ```
 {
-	"id" : int,
-	"name" : str,
+  "id" : int,
+  "name" : str,
 }
 ```
 
@@ -175,27 +192,27 @@ Response (в иных случаях):
 Request:
 ```
 {
-	"name" : str
-	"parent_id" : ?int 
+  "name" : str
+  "parent_id" : ?int 
 }
 ```
 Response (Если указан "parent_id"):
 ```
 {
-	"id" : int,
-	"name" : str,
-	"subcategory" : 
-	{
-		"id" : int,
-		"name" : str,
-	}
+  "id" : int,
+  "name" : str,
+  "subcategory" : 
+  {
+    "id" : int,
+    "name" : str,
+  }
 }
 ```
 Response (в иных случаях):
 ```
 {
-	"id" : int,
-	"name" : str,
+  "id" : int,
+  "name" : str,
 }
 ```
 
@@ -211,22 +228,22 @@ Response (в иных случаях):
 Request:
 ```
 {
-	"type" : str
-	"amount" : str (дробное число типа 189945,56)
-	"comment" : ?str
-	"date" : ?int (timestamp, default=current_date/time)
-	"category_id" : ?int
+  "type" : str
+  "amount" : str (дробное число типа 189945,56)
+  "comment" : ?str
+  "date" : ?int (timestamp, default=current_date/time)
+  "category_id" : ?int
 }
 ```
 Response:
 ```
 {
-	"id" : int  
-	"type" : str (expenses - расходы; income - доходы)
-	"amount" : str (дробное число типа 189945,56)
-	"comment" : ?str
-	"date" : ?int (timestamp) 
-	"category_id" : ?int 
+  "id" : int  
+  "type" : str (expenses - расходы; income - доходы)
+  "amount" : str (дробное число типа 189945,56)
+  "comment" : ?str
+  "date" : ?int (timestamp) 
+  "category_id" : ?int 
 }
 ```
 
@@ -237,12 +254,12 @@ Response:
 Response:
 ```
 {
-	"id" : int 
-	"type" : str (expenses - расходы; income - доходы)
-	"amount" : str (дробное число типа 189945,56)
-	"comment" : ?str
-	"date" : int (timestamp) 
-	"category_id" : int
+  "id" : int 
+  "type" : str (expenses - расходы; income - доходы)
+  "amount" : str (дробное число типа 189945,56)
+  "comment" : ?str
+  "date" : int (timestamp) 
+  "category_id" : int
 }
 ```
 
@@ -253,22 +270,22 @@ Response:
 Request:
 ```
 {
-	"type" : ?str (expenses - расходы; income - доходы)
-	"amount" : ?str (дробное число типа 189945,56)
-	"comment" : ?str
-	"date" : ?str (timestamp) 
-	"category_id" : ?int 
+  "type" : ?str (expenses - расходы; income - доходы)
+  "amount" : ?str (дробное число типа 189945,56)
+  "comment" : ?str
+  "date" : ?str (timestamp) 
+  "category_id" : ?int 
 }
 ```
 Response:
 ```
 {
-	"id" : int
-	"type : str (expenses - расходы; income - доходы)
-	"amount" : str (дробное число типа 189945,56)
-	"comment" : ?str
-	"date" : str (timestamp) 
-	"category_id" : ?int
+  "id" : int
+  "type : str (expenses - расходы; income - доходы)
+  "amount" : str (дробное число типа 189945,56)
+  "comment" : ?str
+  "date" : str (timestamp) 
+  "category_id" : ?int
 }
 ```
 
@@ -284,46 +301,50 @@ Response:
 Request:
 ```
 Query params:
-	from = ?str
-	to = ?str
-	type = ?str (expenses - расходы; income - доходы)
-	category_id = ?int
-	page_size = ?int (default = 20)
-	page = ?int (default = 1)
+  from = ?str
+  to = ?str
+  type = ?str (expenses - расходы; income - доходы)
+  category_id = ?int
+  page_size = ?int (default = 20)
+  page = ?int (default = 1)
 ```
 Response:
 ```
 {	
-	"page_count" : int  
-	"page" : int 
-	"page_size" : int 
-	"item_count" : int
-	""total" : str (дробное число типа 189945,56)
-	"transactions" : [
-		{
-			"id" : int
-			"amount" : str (дробное число типа 189945,56)
-			"comment" : ?str
-			"type" : str (expenses - расходы; income - доходы)
-			"date" : str (timestamp) 
-			"category" : [
-       				{
-           					"id" : int,
-          					"name" : str       
-				},
-				{
-       					… n …
-				}
-   			]
-		},
-		{
-			… n …
-		}
-	]
+  "page_count" : int  
+  "page" : int 
+  "page_size" : int 
+  "item_count" : int
+  "total" : str (дробное число типа 189945,56)
+  "transactions" : [
+    {
+      "id" : int
+      "amount" : str (дробное число типа 189945,56)
+      "comment" : ?str
+      "type" : str (expenses - расходы; income - доходы)
+      "date" : str (timestamp) 
+      "category" : [
+        {
+          "id" : int,
+          "name" : str       
+        },
+        {
+          … n …	
+        }
+      ]
+    },
+    {
+      … n …	  
+    }
+  ]
 } 
 ```
 
-### Примеры API запросов <a name="example"></a>
+### Примеры API запросов и Тесты <a name="example"></a>
+
+Для тестирования используем программу [Postman](https://www.postman.com/),
+к которой прилагается файл [HomeDesk Solutions - API Test Collection.postman_collection]()
+(см. директорию tests/) с коллекцией тестов.
 
 ### Построен с использованием <a name="build_with"></a>
 
