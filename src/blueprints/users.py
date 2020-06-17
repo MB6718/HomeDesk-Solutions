@@ -14,7 +14,7 @@ from flask import (
 
 from werkzeug.security import generate_password_hash
 
-from src.database import db
+from database import db
 
 bp = Blueprint('users', __name__)
 
