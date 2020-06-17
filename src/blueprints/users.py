@@ -11,11 +11,11 @@ from werkzeug.security import (
 	check_password_hash
 )
 
-from src.auth import auth_required
+from auth import auth_required
 
-from src.database import db
+from database import db
 
-from src.services.users import UsersService
+from services.users import UsersService
 
 bp = Blueprint('users', __name__)
 
@@ -23,7 +23,6 @@ bp = Blueprint('users', __name__)
 @bp.route('', methods=["POST"])
 def users():
 	""" Обработка регистрации нового пользователя """
-	print('here')
 	request_json = request.json
 
 	email = request_json.get('email')
