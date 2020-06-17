@@ -13,6 +13,7 @@ bp = Blueprint('auth', __name__)
 
 @bp.route('/login', methods=['POST'])
 def login():
+    """ Обработка аутентификации пользователя """
     request_json = request.json
     email = request_json.get('email')
     password = request_json.get('password')
@@ -36,10 +37,11 @@ def login():
         return '', 403
 
     session['account_id'] = user['id']
-    return 'login - OK', 200
+    return '', 200
 
 
 @bp.route('/logout', methods=['POST'])
 def logout():
+    """Обработка выхода(деаутентификации) пользователя"""
     session.pop('account_id', None)
-    return 'logout - OK', 200
+    return '', 200
