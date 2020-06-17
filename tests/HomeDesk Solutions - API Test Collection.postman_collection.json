@@ -1,0 +1,903 @@
+{
+	"info": {
+		"_postman_id": "1fc33f9a-1f24-40f4-b384-0c575090216f",
+		"name": "HomeDesk Solutions - API Test Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Регистрация/аутентификация пользователя",
+			"item": [
+				{
+					"name": "Регистрация",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "12256f20-b1c5-4cbc-b60d-cf8c65b77a81",
+								"exec": [
+									"pm.test(\"Успешная регистрация нового пользователя\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.include({\r",
+									"        email: \"user-1@ex.ru\",\r",
+									"        first_name: \"Ivan\",\r",
+									"        last_name: \"Ivanov\"\r",
+									"    });\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.globals.set(\"userId\", jsonData.id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"first_name\" : \"Ivan\",\r\n    \"last_name\" : \"Ivanov\",\r\n    \"email\" : \"user-1@ex.ru\",\r\n    \"password\" : \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/users",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Регистрация (логин уже существует в БД)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1e057e83-887e-4e53-a99d-cd39948640e9",
+								"exec": [
+									"pm.test(\"Успешная обработка ошибки - Такой логин уже используется\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(409);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"first_name\" : \"Vasili\",\r\n    \"last_name\" : \"Petrov\",\r\n    \"email\" : \"user-1@ex.ru\",\r\n    \"password\" : \"12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/users",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Аутентификация",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2bd7d110-566b-4d11-a0ce-7dfaa3b5a237",
+								"exec": [
+									"pm.test(\"Успешная аутентификация пользователя\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"email\" : \"user-1@ex.ru\",\r\n\t\"password\" : \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Выход",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5bd79902-bc9d-44c5-8b01-4ab98b46e47a",
+								"exec": [
+									"pm.test(\"Выход произведён успешно\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/auth/logout",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Аутентификация (Неверный логин)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b31c6ce1-0b9c-42a9-8ac7-d3d66172aab9",
+								"exec": [
+									"pm.test(\"Проверка входа по неверному логину\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(404);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"email\" : \"user-1@ex.ru\",\r\n\t\"password\" : \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Аутентификация (Неверный пароль)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f2cb446c-ffef-4f66-b92a-7f63d545275d",
+								"exec": [
+									"pm.test(\"Проверка входа по неверному паролю\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(401);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"email\" : \"user-1@ex.ru\",\r\n\t\"password\" : \"1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Категории пользователя",
+			"item": [
+				{
+					"name": "Создание категории",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2eec7f0c-800d-4951-be4b-74c8cd13a51d",
+								"exec": [
+									"pm.test(\"Категория успешно создана\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.include({\r",
+									"        id: \"1\",\r",
+									"        name: \"Еда\",\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Еда\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/categories",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание категории (уже существующей)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "32f6c600-1466-4018-986a-7a296767a595",
+								"exec": [
+									"pm.test(\"Создание уже существующей категории\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(403);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Еда\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/categories",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение категории",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51ca5153-e6b9-48ce-bfdf-d1d821f4e1ae",
+								"exec": [
+									"pm.test(\"Изменение категории успешно\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.include({\r",
+									"        id: \"1\",\r",
+									"        name: \"Продукты\",\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Продукты\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/categories/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание категории ()",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9af0497-044d-45dc-90f4-bfb6a60f0b80",
+								"exec": [
+									"pm.test(\"Категория успешно создана\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.include({\r",
+									"        name: \"Пятёрочка\",\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Пятёрочка\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/categories",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение категории (на уже существующую)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1d685ae8-99c4-4c48-b16b-c1eae9db62bc",
+								"exec": [
+									"pm.test(\"Изменение категории на уже существующую\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(403);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Пятёрочка\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/categories/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получение всех категорий",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d3353c2e-7759-4fb8-a0b0-adef40cfc35d",
+								"exec": [
+									"pm.test(\"Получение всех категорий пользователя\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/categories",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получение категорий пользователя",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0a6f2d9e-e8e7-4555-bfd9-bb97df81bc5f",
+								"exec": [
+									"pm.test(\"Получение категорий пользователя\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/users/categories",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"users",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получить категорию по ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6406e517-25eb-43db-a074-b71c1ebd3a75",
+								"exec": [
+									"pm.test(\"Получение категории по ID успешно\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/categories/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удаление категории по ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "23d1f347-cad4-48a7-95be-47cab82fe948",
+								"exec": [
+									"pm.test(\"Удаление категории успешно\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/categories/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Операции",
+			"item": [
+				{
+					"name": "Создание операции",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7d1eed6c-9781-435a-8e9e-c67c5b3e4c5f",
+								"exec": [
+									"pm.test(\"Операция успешно создана\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"expenses\",\r\n  \"amount\" : \"258.12\",\r\n  \"comment\" : \"blablabla\",\r\n  \"date\" : 123456789,\r\n  \"category_id\" : 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/transactions",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получение операции по ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ffdae696-c07f-4c67-bffb-beedfa164dcf",
+								"exec": [
+									"pm.test(\"Получение операции по ID успешно\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/transactions/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"transactions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение операции по ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "657d33c4-b30f-4989-a805-a5f15265b6cf",
+								"exec": [
+									"pm.test(\"Изменение операции по ID успешно\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"income\",\r\n  \"amount\" : \"2888.11\",\r\n  \"comment\" : \"blablabla\",\r\n  \"date\" : 123465465\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/transactions/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"transactions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Удаление операции по ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "28f0d9b5-f90a-4109-ad9a-6233368a1978",
+								"exec": [
+									"pm.test(\"Удаление операции по ID успешно\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/transactions/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"transactions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Отчёт",
+			"item": [
+				{
+					"name": "Получить отчёт",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "17d5891f-b7f2-4986-ab45-83e85d05efa2",
+								"exec": [
+									"pm.test(\"Получение отчёта успешно\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8155b381-36ad-4527-8584-2d8669a20b01",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5000/report",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"report"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "to",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "type",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "category_id",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "page_size",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
