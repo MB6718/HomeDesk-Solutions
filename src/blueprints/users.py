@@ -8,10 +8,7 @@ from flask import (
 	jsonify
 )
 
-from werkzeug.security import (
-	generate_password_hash,
-	check_password_hash
-)
+from werkzeug.security import generate_password_hash
 
 from src.auth import auth_required
 
@@ -39,10 +36,10 @@ def users():
 	except ValidationError as err:
 		return err.messages, 400
 
-	email = request_json.get('email')
-	first_name = request_json.get('first_name')
-	last_name = request_json.get('last_name')
-	password = request_json.get('password')
+	email = request_json.get("email")
+	first_name = request_json.get("first_name")
+	last_name = request_json.get("last_name")
+	password = request_json.get("password")
 
 	password_hash = generate_password_hash(password)
 	with db.connection as con:
@@ -55,4 +52,12 @@ def users():
 			con.commit()
 		except sqlite3.IntegrityError:
 			return 'Данный пользователь уже существует', 409
-	return request_json, 200
+
+		cur = con.execute("""
+		SELECT id, first_name, last_name, email
+		FROM account
+		WHERE email=?""",
+		(email,)
+		)
+		response = cur.fetchone()
+	return jsonify(dict(response)), 200
