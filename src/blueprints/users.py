@@ -1,5 +1,7 @@
 import sqlite3
 
+from marshmallow import Schema, fields, ValidationError
+
 from flask import (
 	Blueprint,
 	request,
@@ -11,19 +13,31 @@ from werkzeug.security import (
 	check_password_hash
 )
 
-from auth import auth_required
+from src.auth import auth_required
 
-from database import db
+from src.database import db
 
-from services.users import UsersService
+from src.services.users import UsersService
 
 bp = Blueprint('users', __name__)
+
+
+class UsersSchema(Schema):
+	email = fields.Email()
+	password = fields.Str()
+	first_name = fields.Str()
+	last_name = fields.Str()
 
 
 @bp.route('', methods=["POST"])
 def users():
 	""" Обработка регистрации нового пользователя """
 	request_json = request.json
+
+	try:
+		validation = UsersSchema().load(request_json)
+	except ValidationError as err:
+		return err.messages, 400
 
 	email = request_json.get('email')
 	first_name = request_json.get('first_name')
