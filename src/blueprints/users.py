@@ -1,6 +1,10 @@
 import sqlite3
 
-from marshmallow import Schema, fields, ValidationError
+from marshmallow import (
+	Schema,
+	fields,
+	ValidationError
+)
 
 from flask import (
 	Blueprint,
@@ -10,11 +14,7 @@ from flask import (
 
 from werkzeug.security import generate_password_hash
 
-from src.auth import auth_required
-
 from src.database import db
-
-from src.services.users import UsersService
 
 bp = Blueprint('users', __name__)
 
@@ -26,7 +26,7 @@ class UsersSchema(Schema):
 	last_name = fields.Str()
 
 
-@bp.route('', methods=["POST"])
+@bp.route('', methods=['POST'])
 def users():
 	""" Обработка регистрации нового пользователя """
 	request_json = request.json
@@ -36,10 +36,10 @@ def users():
 	except ValidationError as err:
 		return err.messages, 400
 
-	email = request_json.get("email")
-	first_name = request_json.get("first_name")
-	last_name = request_json.get("last_name")
-	password = request_json.get("password")
+	email = request_json.get('email')
+	first_name = request_json.get('first_name')
+	last_name = request_json.get('last_name')
+	password = request_json.get('password')
 
 	password_hash = generate_password_hash(password)
 	with db.connection as con:
