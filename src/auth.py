@@ -38,16 +38,16 @@ def transaction_owner(view_func):
 def users_category(view_func):
 	@wraps(view_func)
 	def wrapper(*args, **kwargs):
-		user_id = session.get('user_id')
-		if not user_id:
+		account_id = session.get('account_id')
+		if not account_id:
 			return '', 401
-		name_category = kwargs['name']
+		category_id = kwargs['name']
 		with db.connection as con:
 			cur = con.execute("""
 			SELECT *
 			FROM category
-			WHERE name = ? AND account_id = ?
-			""",(name_category,user_id))
+			WHERE id = ? AND account_id = ?
+			""",(category_id,account_id))
 			ans = cur.fetchone()
 		if not ans:
 			return '', 403
