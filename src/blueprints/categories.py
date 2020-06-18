@@ -21,10 +21,14 @@ class CategoriesView(MethodView):
 		""" Обработка  """
 		return f'Categories GET - OK', 200
 	
-	#@auth_required
-	def post(self):
-		""" Обработка  """
-		return f'Categories POST - OK', 200
+	@auth_required
+	def post(self, account_id):
+		id = account_id
+		with db.connection as con:
+			request_json = request.json
+			service = CategoriesService(con)
+			category = service.add_category(request_json, id)
+			return jsonify(category), 200
 
 class CategoryIDView(MethodView):
 
@@ -40,8 +44,11 @@ class CategoryIDView(MethodView):
 	
 	#@auth_required
 	def delete(self, category_id):
-		""" Обработка  """
-		return f'CategoryID:{category_id} DELETE - OK', 200
+		with db.connection as con:
+			service = CategoriesService(con)
+			service.delete_category(category_id)
+			return '', 204
+
 
 bp.add_url_rule('', view_func=CategoriesView.as_view('categories'))
 bp.add_url_rule(
