@@ -1,5 +1,7 @@
 # HomeDesk-Solutions
 
+![HomeDesk-Solutions](logo/hds-beta-logo.png)
+
 [![version](https://img.shields.io/badge/Version-BETA-BrightGreen)](https://github.com/MB6718/HomeDesk-Solutions/)
 [![python-version](https://img.shields.io/badge/Python-v3.8-blue)](https://www.python.org/downloads/release/python-383rc1/)
 [![platform](https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20macos-LightGray)](https://ru.wikipedia.org/wiki/%D0%9A%D1%80%D0%BE%D1%81%D1%81%D0%BF%D0%BB%D0%B0%D1%82%D1%84%D0%BE%D1%80%D0%BC%D0%B5%D0%BD%D0%BD%D0%BE%D1%81%D1%82%D1%8C)
