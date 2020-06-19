@@ -1,9 +1,36 @@
 import sqlite3
 
+from exceptions import ServiceError
+
+
+class CategoriesServiceError(ServiceError):
+    service = 'categories'
+
+
+class CategoryDoesNotExistError(CategoriesServiceError):
+    pass
+
+class CategoryExistError(CategoriesServiceError):
+	def __init__(self, category):
+		self.category = category
+
 
 class CategoriesService:
 	def __init__(self, connection):
 		self.connection = connection
+		
+	def check_parent_id(self, parent_id):
+		cur = self.connection.cursor()
+		cur.execute(
+			'SELECT c.name, c.id '
+			'FROM category AS c '
+			'WHERE c.id = ?',
+			(parent_id,)
+		)
+		parent_category = cur.fetchone()
+		if parent_category is None:
+			raise CategoryDoesNotExistError
+		return parent_category
 	
 	def add_category(self, request_json, account_id):
 		""" Создание категории в БД """
@@ -19,19 +46,10 @@ class CategoriesService:
 		category = cur.fetchone()
 		
 		if category is not None:
-			return dict(category), 409
+			raise CategoryExistError(category)
 		
 		if parent_id:
-			cur.execute(
-				'SELECT c.name, c.id '
-				'FROM category AS c '
-				'WHERE c.id = ?',
-				(parent_id,)
-			)
-			parent_category = cur.fetchone()
-			
-			if parent_id and parent_category == None:
-				return '', 404
+			parent_category = self.check_parent_id(parent_id)
 
 		cur.execute(
 			'INSERT INTO category (account_id, parent_id, name) '
@@ -42,10 +60,12 @@ class CategoriesService:
 		cur.execute(query, (name_category, account_id,))
 		result = dict(cur.fetchone())
 		if parent_id:
-			result['subcategory'] = dict(parent_category)
+			parent_category = dict(parent_category)
+			parent_category['subcategory'] = result
+			result = parent_category
 			
 		self.connection.commit()
-		return result, 200
+		return result
 
 	
 	def delete_category(self, category_id):
@@ -60,7 +80,6 @@ class CategoriesService:
 				WHERE parent_id = {id}
 				""")
 			result = cur.fetchall()
-			print(result)
 			if result:
 				for elem in result:
 					list_id.append(elem[0])
@@ -70,4 +89,32 @@ class CategoriesService:
 				WHERE id = {id}
 				""")
 		self.connection.commit()
-		return
+		
+	
+	def patch_category(self, request_json, category_id):
+		cur = self.connection.cursor()
+		parent_id = request_json.get('parent_id')
+		if parent_id:
+			parent_category = self.check_parent_id(parent_id)
+		for key, value in request_json.items():
+			if key == 'name':
+				value = value.lower()
+			cur.execute(f"""
+		        UPDATE category
+		        SET {key} = '{value}'
+		        WHERE id= {category_id}
+		    """)
+		query = (
+			'SELECT c.name, c.id '
+			'FROM category AS c '
+			'WHERE id = ? '
+		)
+		cur.execute(query, (category_id,))
+		result = dict(cur.fetchone())
+		if parent_id:
+			parent_category = dict(parent_category)
+			parent_category['subcategory'] = result
+			result = parent_category
+		
+		self.connection.commit()
+		return result

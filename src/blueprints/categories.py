@@ -10,7 +10,11 @@ from database import db
 
 from auth import auth_required
 
-from services.categories import CategoriesService
+from services.categories import (
+	CategoriesService,
+	CategoryDoesNotExistError,
+	CategoryExistError,
+)
 
 bp = Blueprint('categories', __name__)
 
@@ -23,12 +27,17 @@ class CategoriesView(MethodView):
 	
 	@auth_required
 	def post(self, account_id):
-		id = account_id
+		request_json = request.json
 		with db.connection as con:
-			request_json = request.json
 			service = CategoriesService(con)
-			category = service.add_category(request_json, id)
-			return jsonify(category), 200
+			try:
+				category = service.add_category(request_json, account_id)
+			except CategoryDoesNotExistError:
+				return '', 404
+			except CategoryExistError as e:
+				return jsonify(dict(e.category)), 409
+			else:
+				return jsonify(category), 200
 
 class CategoryIDView(MethodView):
 
@@ -37,12 +46,19 @@ class CategoryIDView(MethodView):
 		""" Обработка  """
 		return f'CategoryID:{category_id} GET - OK', 200
 	
-	#@auth_required
+	@auth_required
 	def patch(self, category_id):
-		""" Обработка  """
-		return f'CategoryID:{category_id} PATCH - OK', 200
+		request_json = request.json
+		with db.connection as con:
+			service = CategoriesService(con)
+			try:
+				category = service.patch_category(request_json, category_id)
+			except CategoryDoesNotExistError:
+				return '', 404
+			else:
+				return jsonify(category), 201
 	
-	#@auth_required
+	@auth_required
 	def delete(self, category_id):
 		with db.connection as con:
 			service = CategoriesService(con)
