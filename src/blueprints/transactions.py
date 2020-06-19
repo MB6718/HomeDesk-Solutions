@@ -7,8 +7,8 @@ from flask import (
 )
 from flask.views import MethodView
 
-from database import db
 from auth import auth_required, transaction_owner
+from database import db
 from services.transactions import TransactionsService
 
 bp = Blueprint('transactions', __name__)
@@ -71,7 +71,7 @@ class TransactionIDView(MethodView):
 		with db.connection as con:
 			service = TransactionsService(con)
 			service.del_transaction(transaction_id)
-		return '', 200
+		return '', 204
 
 
 bp.add_url_rule('',	view_func=TransactionView.as_view('transaction'))

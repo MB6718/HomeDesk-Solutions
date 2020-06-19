@@ -18,18 +18,8 @@ class TransactionsService:
 			)
 		)
 		self.connection.commit()
-		transaction_id = cur.lastrowid
 		
-		cur = self.connection.execute("""
-			SELECT *
-			FROM transactions AS t
-			WHERE t.id = ?
-			""",
-			(transaction_id,)
-		)
-		transaction = cur.fetchone()
-		
-		return dict(transaction)
+		return self.get_transaction(cur.lastrowid)
 	
 	def get_transaction(self, transaction_id):
 		""" Получение транзакции из БД """
@@ -40,65 +30,22 @@ class TransactionsService:
 			""",
 			(transaction_id,)
 		)
-		transaction = cur.fetchone()
 		
-		return dict(transaction)
+		return dict(cur.fetchone())
 	
 	def patch_transaction(self, transaction, transaction_id):
 		""" Изменение транзакции в БД """
-		if 'type' in transaction:
-			cur = self.connection.execute("""
+		for name, value in transaction.items():
+			cur = self.connection.execute(f"""
 				UPDATE transactions
-				SET type = ?
+				SET {name} = '{value}'
 				WHERE transactions.id = ?
 				""",
-				(transaction['type'], transaction_id,)
+				(transaction_id,)
 			)
-		if 'amount' in transaction:
-			cur = self.connection.execute("""
-				UPDATE transactions
-				SET amount = ?
-				WHERE transactions.id = ?
-				""",
-				(transaction['amount'], transaction_id,)
-			)
-		if 'comment' in transaction:
-			cur = self.connection.execute("""
-				UPDATE transactions
-				SET comment = ?
-				WHERE transactions.id = ?
-				""",
-				(transaction['comment'], transaction_id,)
-			)
-		if 'date' in transaction:
-			cur = self.connection.execute("""
-				UPDATE transactions
-				SET date = ?
-				WHERE transactions.id = ?
-				""",
-				(transaction['date'], transaction_id,)
-			)
-		if 'category_id' in transaction:
-			cur = self.connection.execute("""
-				UPDATE transactions
-				SET category_id = ?
-				WHERE transactions.id = ?
-				""",
-				(transaction['category_id'], transaction_id,)
-			)
-			
 		self.connection.commit()
 		
-		cur = self.connection.execute("""
-			SELECT *
-			FROM transactions AS t
-			WHERE t.id = ?
-			""",
-			(transaction_id,)
-		)
-		transaction = cur.fetchone()
-		
-		return dict(transaction)
+		return self.get_transaction(transaction_id)
 	
 	def del_transaction(self, transaction_id):
 		""" Удаление транзакции из БД """
