@@ -1,7 +1,8 @@
 from flask import (
 	Blueprint,
 	request,
-	jsonify
+	jsonify,
+	session
 )
 
 from flask.views import MethodView
@@ -19,11 +20,26 @@ bp = Blueprint('categories', __name__)
 
 class CategoriesView(MethodView):
 
-	#@auth_required
+	@auth_required
 	def get(self):
 		""" Обработка  """
-		return f'Categories GET - OK', 200
-	
+		user_id = session['account_id']
+		with db.connection as con:
+			cur = con.execute("""
+			SELECT id, name
+			FROM category
+			WHERE account_id=? and parent_id is NULL  
+			""",
+				(user_id,)
+			)
+			parent_category = [dict(elem) for elem in cur.fetchall()]
+			print(parent_category)
+			if parent_category:
+				for i in range(len(parent_category)):
+					parent_category[i] = CategoriesService.subcategories(con, user_id, parent_category[i])
+		return jsonify(parent_category), 200
+
+
 	#@auth_required
 	def post(self):
 		""" Обработка  """
@@ -41,7 +57,7 @@ class CategoryIDView(MethodView):
 	def patch(self, category_id):
 		""" Обработка  """
 		return f'CategoryID:{category_id} PATCH - OK', 200
-	
+
 	@auth_required
 	@category_owner
 	def delete(self, category_id):
