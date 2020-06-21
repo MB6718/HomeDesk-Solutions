@@ -66,6 +66,7 @@ class CategoriesView(MethodView):
 
 class CategoryIDView(MethodView):
 	@auth_required
+	@category_owner
 	def get(self, account_id, category_id):
 		"""Возвращает дерево категорий, начиная с category_id категории"""
 		with db.connection as con:
@@ -86,6 +87,7 @@ class CategoryIDView(MethodView):
 			return jsonify(tree_category), 201
 	
 	@auth_required
+	@category_owner
 	def patch(self, category_id, account_id):
 		"""Функция для внесений изменений в категорию"""
 		request_json = request.json
@@ -99,7 +101,8 @@ class CategoryIDView(MethodView):
 				return jsonify(category), 201
 	
 	@auth_required
-	def delete(self, category_id):
+	@category_owner
+	def delete(self, category_id, account_id):
 		"""Функция для удаления категории и всех ёё потомков"""
 		with db.connection as con:
 			service = CategoriesService(con)
