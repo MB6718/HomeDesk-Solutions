@@ -31,7 +31,11 @@ class CategoriesService:
 		subcategory = [dict(elem) for elem in cur.fetchall()]
 		if subcategory:
 			for i in range(len(subcategory)):
-				subcategory[i] = CategoriesService.get_tree_subcategories(con, account_id, subcategory[i])
+				subcategory[i] = CategoriesService.get_tree_subcategories(
+					con,
+					account_id,
+					subcategory[i]
+				)
 		parent_category['subcategory'] = subcategory
 		return parent_category
 	
@@ -74,6 +78,7 @@ class CategoriesService:
 			'VALUES (?, ?, ?) ',
 			(account_id, parent_id, name_category)
 		)
+		self.connection.commit()
 
 		cur.execute(query, (name_category, account_id,))
 		result = dict(cur.fetchone())
@@ -81,8 +86,7 @@ class CategoriesService:
 			parent_category = dict(parent_category)
 			parent_category['subcategory'] = result
 			result = parent_category
-			
-		self.connection.commit()
+
 		return result
 	
 	

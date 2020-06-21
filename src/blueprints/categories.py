@@ -22,24 +22,29 @@ class CategoriesView(MethodView):
 
 	@auth_required
 	def get(self, account_id):
-
+		"""Возвращает деревья категорий, принадлежащих пользотелю"""
 		with db.connection as con:
 			service = CategoriesService(con)
 			cur = con.execute("""
 				SELECT id, name
 				FROM category
-				WHERE account_id=? and parent_id is NULL
+				WHERE account_id = ? and parent_id is NULL
 				""",
 				(account_id,)
 			)
 			parent_category = [dict(elem) for elem in cur.fetchall()]
 			if parent_category:
 				for i in range(len(parent_category)):
-					parent_category[i] = service.get_tree_subcategories(con, account_id, parent_category[i])
+					parent_category[i] = service.get_tree_subcategories(
+						con,
+						account_id,
+						parent_category[i]
+					)
 		return jsonify(parent_category), 200
 	
 	@auth_required
 	def post(self, account_id):
+		"""Функция добавления категории"""
 		category = request.json
 		name = category.get('name')
 		parent_id = category.get('parent_id')
@@ -60,23 +65,27 @@ class CategoryIDView(MethodView):
 
 	@auth_required
 	def get(self, account_id, category_id):
+		"""Возвращает дерево категорий, начиная с category_id категории"""
 		with db.connection as con:
 			cur = con.execute("""
 				SELECT id, name
 				FROM category
-				WHERE account_id=? and id = ?
+				WHERE account_id = ? and id = ?
 				""",
 				(account_id, category_id,)
 			)
-			print(account_id, category_id)
-			parent_category = dict(cur.fetchone())
+			parent_category = cur.fetchone()
 			service = CategoriesService(con)
-			tree_category = service.get_tree_subcategories(con, account_id, parent_category)
+			tree_category = service.get_tree_subcategories(
+				con,
+				account_id,
+				dict(parent_category)
+			)
 			return jsonify(tree_category), 201
-		
 	
 	@auth_required
-	def patch(self, category_id):
+	def patch(self, category_id, account_id):
+		"""Функция для внесений изменений в категорию"""
 		request_json = request.json
 		with db.connection as con:
 			service = CategoriesService(con)
@@ -89,6 +98,7 @@ class CategoryIDView(MethodView):
 	
 	@auth_required
 	def delete(self, category_id):
+		"""Функция для удаления категории и всех ёё потомков"""
 		with db.connection as con:
 			service = CategoriesService(con)
 			service.delete_category(category_id)
