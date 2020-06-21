@@ -16,7 +16,7 @@ bp = Blueprint('transactions', __name__)
 class TransactionView(MethodView):
 	
 	@auth_required
-	def post(self, user_id):
+	def post(self, account_id):
 		""" Обработка добавления новой транзакции в БД """
 		transaction = request.json
 		type = transaction.get('type')
@@ -34,7 +34,7 @@ class TransactionView(MethodView):
 		if not comment:
 			transaction['comment'] = ''
 		
-		transaction['account_id'] = user_id
+		transaction['account_id'] = account_id
 		
 		with db.connection as con:
 			service = TransactionsService(con)
@@ -45,7 +45,7 @@ class TransactionIDView(MethodView):
 
 	@auth_required
 	@transaction_owner
-	def get(self, transaction_id, user_id):
+	def get(self, transaction_id, account_id):
 		""" Обработка получения транзакции из БД """
 		with db.connection as con:
 			service = TransactionsService(con)
@@ -54,7 +54,7 @@ class TransactionIDView(MethodView):
 	
 	@auth_required
 	@transaction_owner
-	def patch(self, transaction_id, user_id):
+	def patch(self, transaction_id, account_id):
 		""" Обработка изменения  транзакции в БД """
 		with db.connection as con:
 			service = TransactionsService(con)
@@ -66,7 +66,7 @@ class TransactionIDView(MethodView):
 	
 	@auth_required
 	@transaction_owner
-	def delete(self, transaction_id, user_id):
+	def delete(self, transaction_id, account_id):
 		""" Обработка удаления транзакции из БД """
 		with db.connection as con:
 			service = TransactionsService(con)
