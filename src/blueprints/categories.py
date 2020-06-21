@@ -8,7 +8,10 @@ from flask.views import MethodView
 
 from database import db
 
-from auth import auth_required
+from auth import (
+	category_owner,
+	auth_required
+)
 
 from services.categories import (
 	CategoriesService,
@@ -62,7 +65,6 @@ class CategoriesView(MethodView):
 				return jsonify(category), 200
 
 class CategoryIDView(MethodView):
-
 	@auth_required
 	def get(self, account_id, category_id):
 		"""Возвращает дерево категорий, начиная с category_id категории"""
@@ -103,6 +105,7 @@ class CategoryIDView(MethodView):
 			service = CategoriesService(con)
 			service.delete_category(category_id)
 			return '', 204
+
 
 
 bp.add_url_rule('', view_func=CategoriesView.as_view('categories'))
