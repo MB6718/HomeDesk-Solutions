@@ -18,8 +18,25 @@ class CategoryExistError(CategoriesServiceError):
 class CategoriesService:
 	def __init__(self, connection):
 		self.connection = connection
+	
+	@staticmethod
+	def get_tree_subcategories(con, account_id, parent_category):
+		cur = con.execute("""
+			SELECT id, name
+			FROM category
+			WHERE account_id=? and parent_id = ?
+			""",
+			(account_id, parent_category['id'])
+		)
+		subcategory = [dict(elem) for elem in cur.fetchall()]
+		if subcategory:
+			for i in range(len(subcategory)):
+				subcategory[i] = CategoriesService.get_tree_subcategories(con, account_id, subcategory[i])
+		parent_category['subcategory'] = subcategory
+		return parent_category
+	
 		
-	def check_parent_id(self, parent_id):
+	def check_exist_category(self, parent_id):
 		cur = self.connection.cursor()
 		cur.execute(
 			'SELECT c.name, c.id '
@@ -32,11 +49,12 @@ class CategoriesService:
 			raise CategoryDoesNotExistError
 		return parent_category
 	
-	def add_category(self, request_json, account_id):
+	
+	def add_category(self, category, account_id):
 		""" Создание категории в БД """
 		cur = self.connection.cursor()
-		name_category = request_json.get('name').lower()
-		parent_id = request_json.get('parent_id')
+		name_category = category.get('name').lower()
+		parent_id = category.get('parent_id')
 		query = (
 			'SELECT c.name, c.id '
 			'FROM category AS c '
@@ -49,7 +67,7 @@ class CategoriesService:
 			raise CategoryExistError(category)
 		
 		if parent_id:
-			parent_category = self.check_parent_id(parent_id)
+			parent_category = self.check_exist_category(parent_id)
 
 		cur.execute(
 			'INSERT INTO category (account_id, parent_id, name) '
@@ -66,7 +84,7 @@ class CategoriesService:
 			
 		self.connection.commit()
 		return result
-
+	
 	
 	def delete_category(self, category_id):
 		""" Удаление категории из БД. При удаление категории родителя удаляются все наследующиеся от него категории-дети"""
@@ -95,7 +113,7 @@ class CategoriesService:
 		cur = self.connection.cursor()
 		parent_id = request_json.get('parent_id')
 		if parent_id:
-			parent_category = self.check_parent_id(parent_id)
+			parent_category = self.check_exist_category(parent_id)
 		for key, value in request_json.items():
 			if key == 'name':
 				value = value.lower()
