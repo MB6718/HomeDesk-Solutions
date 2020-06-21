@@ -538,43 +538,6 @@
 					"response": []
 				},
 				{
-					"name": "Получение категорий пользователя",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "0a6f2d9e-e8e7-4555-bfd9-bb97df81bc5f",
-								"exec": [
-									"pm.test(\"Получение категорий пользователя\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Проверка JSON ответа\", function () {\r",
-									"    pm.response.to.be.json;\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "localhost:5000/users/categories",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"users",
-								"categories"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Получить категорию по ID",
 					"event": [
 						{
@@ -620,7 +583,7 @@
 								"id": "23d1f347-cad4-48a7-95be-47cab82fe948",
 								"exec": [
 									"pm.test(\"Удаление категории успешно\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"    pm.expect(pm.response.code).to.eql(204);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -787,7 +750,7 @@
 								"id": "28f0d9b5-f90a-4109-ad9a-6233368a1978",
 								"exec": [
 									"pm.test(\"Удаление операции по ID успешно\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"    pm.expect(pm.response.code).to.eql(204);\r",
 									"});"
 								],
 								"type": "text/javascript"
