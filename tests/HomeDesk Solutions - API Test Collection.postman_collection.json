@@ -410,7 +410,7 @@
 					"response": []
 				},
 				{
-					"name": "Создание категории ()",
+					"name": "Создание дочерней категории (категория сущкствует)",
 					"event": [
 						{
 							"listen": "test",
@@ -438,7 +438,56 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"Пятёрочка\"\r\n}\r\n",
+							"raw": "{\r\n    \"name\" : \"Пятёрочка\",\r\n    \"parent_id\" : 1\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:5000/categories",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание дочерней категории (категория не сущкствует)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "698b0340-fb08-4f1e-bac9-34482373e90a",
+								"exec": [
+									"pm.test(\"Категория успешно создана\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.include({\r",
+									"        name: \"Пятёрочка\",\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"ПыхтачОК\",\r\n    \"parent_id\" : 101\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
