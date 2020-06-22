@@ -62,4 +62,4 @@ def users():
 			(email,)
 		)
 		response = cur.fetchone()
-	return jsonify(dict(response)), 200
+	return jsonify(dict(response)), 201

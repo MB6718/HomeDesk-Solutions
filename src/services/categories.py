@@ -10,6 +10,9 @@ class CategoriesServiceError(ServiceError):
 class CategoryDoesNotExistError(CategoriesServiceError):
     pass
 
+class NotEnoughRightsError(CategoriesServiceError):
+	pass
+
 class CategoryExistError(CategoriesServiceError):
 	def __init__(self, category):
 		self.category = category
@@ -40,7 +43,7 @@ class CategoriesService:
 		return parent_category
 	
 		
-	def check_exist_parent_category(self, parent_id):
+	def check_exist_parent_category(self, parent_id, account_id):
 		cur = self.connection.cursor()
 		cur.execute(
 			'SELECT c.name, c.id '
@@ -51,6 +54,16 @@ class CategoriesService:
 		parent_category = cur.fetchone()
 		if parent_category is None:
 			raise CategoryDoesNotExistError
+		cur.execute(f"""
+			SELECT c.account_id
+			FROM categories AS c
+			WHERE c.id = ?
+			""",
+			(parent_id,)
+		)
+		result = cur.fetchone()
+		if result['account_id'] != account_id:
+			raise NotEnoughRightsError
 		return parent_category
 	
 	
@@ -76,7 +89,7 @@ class CategoriesService:
 		parent_id = category.get('parent_id')
 		query = self.check_exist_category(account_id, name_category)
 		if parent_id:
-			parent_category = self.check_exist_category(parent_id)
+			parent_category = self.check_exist_parent_category(parent_id, account_id)
 
 		cur.execute(
 			'INSERT INTO categories (account_id, parent_id, name) '
@@ -122,11 +135,12 @@ class CategoriesService:
 		cur = self.connection.cursor()
 		parent_id = request_json.get('parent_id')
 		if parent_id:
-			parent_category = self.check_exist_category(parent_id)
+			if parent_id != 'NULL':
+				parent_category = self.check_exist_parent_category(parent_id, account_id)
 		for key, value in request_json.items():
 			if key == 'name':
-				self.check_exist_category(account_id, value)
 				value = value.lower()
+				self.check_exist_category(account_id, value)
 			cur.execute(f"""
 		        UPDATE categories
 		        SET {key} = '{value}'
@@ -139,7 +153,7 @@ class CategoriesService:
 		)
 		cur.execute(query, (category_id,))
 		result = dict(cur.fetchone())
-		if parent_id:
+		if parent_id and parent_id != 'NULL':
 			parent_category = dict(parent_category)
 			parent_category['subcategory'] = result
 			result = parent_category
