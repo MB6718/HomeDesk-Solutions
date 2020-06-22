@@ -30,7 +30,7 @@ class CategoriesView(MethodView):
 			service = CategoriesService(con)
 			cur = con.execute("""
 				SELECT id, name
-				FROM category
+				FROM categories
 				WHERE account_id = ? and parent_id is NULL
 				""",
 				(account_id,)
@@ -72,7 +72,7 @@ class CategoryIDView(MethodView):
 		with db.connection as con:
 			cur = con.execute("""
 				SELECT id, name
-				FROM category
+				FROM categories
 				WHERE account_id = ? and id = ?
 				""",
 				(account_id, category_id,)
@@ -94,9 +94,11 @@ class CategoryIDView(MethodView):
 		with db.connection as con:
 			service = CategoriesService(con)
 			try:
-				category = service.patch_category(request_json, category_id)
+				category = service.patch_category(request_json, category_id, account_id)
 			except CategoryDoesNotExistError:
 				return '', 404
+			except CategoryExistError as e:
+				return jsonify(dict(e.category)), 409
 			else:
 				return jsonify(category), 201
 	

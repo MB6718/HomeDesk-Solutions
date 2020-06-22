@@ -45,19 +45,21 @@ def users():
 	with db.connection as con:
 		try:
 			con.execute("""
-				INSERT INTO Account (first_name, last_name, email, password)
+				INSERT INTO accounts (first_name, last_name, email, password)
 				VALUES (?, ?, ?, ?)
-				""",(first_name, last_name, email, password_hash)
-				)
+				""",
+				(first_name, last_name, email, password_hash)
+			)
 			con.commit()
 		except sqlite3.IntegrityError:
 			return 'Данный пользователь уже существует', 409
 
 		cur = con.execute("""
-		SELECT id, first_name, last_name, email
-		FROM account
-		WHERE email=?""",
-		(email,)
+			SELECT id, first_name, last_name, email
+			FROM accounts
+			WHERE email = ?
+			""",
+			(email,)
 		)
 		response = cur.fetchone()
 	return jsonify(dict(response)), 200
