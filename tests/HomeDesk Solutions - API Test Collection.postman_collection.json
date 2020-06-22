@@ -334,12 +334,15 @@
 							"script": {
 								"id": "ee315926-2be0-4fbf-b710-1628b1e0a9c3",
 								"exec": [
-									"pm.test(\"Категория успешно создана\", function () {\r",
+									"pm.test(\"Cоздание категории\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
 									"});\r",
 									"\r",
 									"pm.test(\"Проверка JSON ответа\", function () {\r",
 									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.collectionVariables.set(\"category_id\", jsonData.id);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -418,7 +421,7 @@
 							"script": {
 								"id": "04fcb536-4e11-4821-8551-995709a07bf7",
 								"exec": [
-									"pm.test(\"Категория успешно создана\", function () {\r",
+									"pm.test(\"Создание подкатегории\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
 									"});\r",
 									"\r",
@@ -435,7 +438,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"Протухты\",\r\n    \"parent_id\" : 1\r\n}\r\n",
+							"raw": "{\r\n    \"name\" : \"Продукты\",\r\n    \"parent_id\" : 1\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -462,7 +465,7 @@
 							"script": {
 								"id": "cf2ca56e-c3d3-408b-b247-63bf05ba3e87",
 								"exec": [
-									"pm.test(\"Категория успешно создана\", function () {\r",
+									"pm.test(\"Создание подкатегории с несущ. родителем\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(404);\r",
 									"});"
 								],
@@ -502,7 +505,7 @@
 							"script": {
 								"id": "76a70b3f-d5e0-4694-b174-3151ca3ec89f",
 								"exec": [
-									"pm.test(\"Изменение категории успешно\", function () {\r",
+									"pm.test(\"Изменение категории\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
 									"});\r",
 									"\r",
@@ -527,13 +530,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{localhost}}/categories/1",
+							"raw": "{{localhost}}/categories/{{category_id}}",
 							"host": [
 								"{{localhost}}"
 							],
 							"path": [
 								"categories",
-								"1"
+								"{{category_id}}"
 							]
 						}
 					},
@@ -561,7 +564,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"Продукты\"\r\n}",
+							"raw": "{\r\n    \"name\" : \"Протухты\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -569,13 +572,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{localhost}}/categories/1",
+							"raw": "{{localhost}}/categories/{{category_id}}",
 							"host": [
 								"{{localhost}}"
 							],
 							"path": [
 								"categories",
-								"1"
+								"{{category_id}}"
 							]
 						}
 					},
@@ -606,7 +609,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"еДа\",\r\n    \"parent_id\" : 3\r\n}",
+							"raw": "{\r\n    \"parent_id\" : 3\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -614,13 +617,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{localhost}}/categories/1",
+							"raw": "{{localhost}}/categories/{{category_id}}",
 							"host": [
 								"{{localhost}}"
 							],
 							"path": [
 								"categories",
-								"1"
+								"{{category_id}}"
 							]
 						}
 					},
@@ -647,7 +650,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"еДа\",\r\n    \"parent_id\" : 1001\r\n}",
+							"raw": "{\r\n    \"parent_id\" : 1001\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -655,13 +658,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{localhost}}/categories/1",
+							"raw": "{{localhost}}/categories/{{category_id}}",
 							"host": [
 								"{{localhost}}"
 							],
 							"path": [
 								"categories",
-								"1"
+								"{{category_id}}"
 							]
 						}
 					},
@@ -710,7 +713,7 @@
 							"script": {
 								"id": "2458c9ac-e999-4ecc-b30a-442146f458d3",
 								"exec": [
-									"pm.test(\"Получение категории по ID успешно\", function () {\r",
+									"pm.test(\"Получение категории по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
 									"});\r",
 									"\r",
@@ -726,13 +729,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{localhost}}/categories/1",
+							"raw": "{{localhost}}/categories/{{category_id}}",
 							"host": [
 								"{{localhost}}"
 							],
 							"path": [
 								"categories",
-								"1"
+								"{{category_id}}"
 							]
 						}
 					},
@@ -746,7 +749,7 @@
 							"script": {
 								"id": "29eccf45-5533-41e9-bd85-56a66cbf9456",
 								"exec": [
-									"pm.test(\"Получение категории по ID успешно\", function () {\r",
+									"pm.test(\"Получение категории по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(404);\r",
 									"});"
 								],
@@ -778,7 +781,7 @@
 							"script": {
 								"id": "094848ff-7ab0-42f5-9024-1a495b27faee",
 								"exec": [
-									"pm.test(\"Получение категории по ID успешно\", function () {\r",
+									"pm.test(\"Получение категории по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(403);\r",
 									"});"
 								],
@@ -822,13 +825,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{localhost}}/categories/1",
+							"raw": "{{localhost}}/categories/{{category_id}}",
 							"host": [
 								"{{localhost}}"
 							],
 							"path": [
 								"categories",
-								"1"
+								"{{category_id}}"
 							]
 						}
 					},
@@ -912,12 +915,15 @@
 							"script": {
 								"id": "db71bca6-46f6-4c22-83f9-cc88801a08b8",
 								"exec": [
-									"pm.test(\"Операция успешно создана\", function () {\r",
+									"pm.test(\"Операция создана\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
 									"});\r",
 									"\r",
 									"pm.test(\"Проверка JSON ответа\", function () {\r",
 									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.collectionVariables.set(\"transaction_id\", jsonData.id);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -970,12 +976,8 @@
 							"script": {
 								"id": "d9133441-5f9c-446b-b85c-dd18e6b94a57",
 								"exec": [
-									"pm.test(\"Операция успешно создана\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Проверка JSON ответа\", function () {\r",
-									"    pm.response.to.be.json;\r",
+									"pm.test(\"Операция создана\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(404);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -1021,6 +1023,60 @@
 					"response": []
 				},
 				{
+					"name": "Создание операции (нет прав на категорию)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "38b61b67-0635-474f-8303-63aa961b29a8",
+								"exec": [
+									"pm.test(\"Операция создана\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(403);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "fcaebe9e-125a-4134-8bba-59c0f6c61e9f",
+								"exec": [
+									"const array_transaction_type = [\"income\", \"expenses\"];\r",
+									"pm.collectionVariables.set(\r",
+									"    \"transaction_type\",\r",
+									"    array_transaction_type[_.random(array_transaction_type.length-1)]\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}},\r\n  \"category_id\" : 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transactions",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Получение операции по ID",
 					"event": [
 						{
@@ -1028,7 +1084,7 @@
 							"script": {
 								"id": "b840deff-c5d2-482c-b1f5-790edd226c3d",
 								"exec": [
-									"pm.test(\"Получение операции по ID успешно\", function () {\r",
+									"pm.test(\"Получение операции по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
 									"});\r",
 									"\r",
@@ -1044,13 +1100,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{localhost}}/transactions/1",
+							"raw": "{{localhost}}/transactions/{{transaction_id}}",
 							"host": [
 								"{{localhost}}"
 							],
 							"path": [
 								"transactions",
-								"1"
+								"{{transaction_id}}"
 							]
 						}
 					},
@@ -1064,7 +1120,7 @@
 							"script": {
 								"id": "5af4467f-998c-403f-baa0-9754b4c97e17",
 								"exec": [
-									"pm.test(\"Получение операции по ID успешно\", function () {\r",
+									"pm.test(\"Получение операции по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(404);\r",
 									"});"
 								],
@@ -1096,7 +1152,7 @@
 							"script": {
 								"id": "4ad9df3e-faf1-4521-9ed0-269271d00818",
 								"exec": [
-									"pm.test(\"Получение операции по ID успешно\", function () {\r",
+									"pm.test(\"Получение операции по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(403);\r",
 									"});"
 								],
@@ -1108,13 +1164,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{localhost}}/transactions/10",
+							"raw": "{{localhost}}/transactions/1",
 							"host": [
 								"{{localhost}}"
 							],
 							"path": [
 								"transactions",
-								"10"
+								"1"
 							]
 						}
 					},
@@ -1128,7 +1184,7 @@
 							"script": {
 								"id": "ef1ffb78-2c84-4844-a2fd-65d082c0ca04",
 								"exec": [
-									"pm.test(\"Изменение операции по ID успешно\", function () {\r",
+									"pm.test(\"Изменение операции по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
 									"});\r",
 									"\r",
@@ -1145,7 +1201,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}},\r\n  \"category_id\" : 1\r\n}",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}},\r\n  \"category_id\" : {{category_id}}\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1153,13 +1209,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{localhost}}/transactions/1",
+							"raw": "{{localhost}}/transactions/{{transaction_id}}",
 							"host": [
 								"{{localhost}}"
 							],
 							"path": [
 								"transactions",
-								"1"
+								"{{transaction_id}}"
 							]
 						}
 					},
@@ -1173,8 +1229,8 @@
 							"script": {
 								"id": "3420349c-f192-421f-85b0-85932b201d22",
 								"exec": [
-									"pm.test(\"Изменение операции по ID успешно\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(409);\r",
+									"pm.test(\"Изменение операции по ID\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(404);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -1194,13 +1250,54 @@
 							}
 						},
 						"url": {
-							"raw": "{{localhost}}/transactions/1",
+							"raw": "{{localhost}}/transactions/{{transaction_id}}",
 							"host": [
 								"{{localhost}}"
 							],
 							"path": [
 								"transactions",
-								"1"
+								"{{transaction_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение операции по ID (нет прав на категорию)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a3dc3409-29d8-4871-b198-0331a9c45b28",
+								"exec": [
+									"pm.test(\"Изменение операции по ID\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(403);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"category_id\" : 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transactions/{{transaction_id}}",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions",
+								"{{transaction_id}}"
 							]
 						}
 					},
@@ -1214,7 +1311,7 @@
 							"script": {
 								"id": "0747d3ba-f062-4499-94e1-8bb7952e0db5",
 								"exec": [
-									"pm.test(\"Изменение операции по ID успешно\", function () {\r",
+									"pm.test(\"Изменение операции по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(404);\r",
 									"});"
 								],
@@ -1255,7 +1352,7 @@
 							"script": {
 								"id": "7ef4bf3d-f9f8-4379-9e97-5ef99b1d81b1",
 								"exec": [
-									"pm.test(\"Изменение операции по ID успешно\", function () {\r",
+									"pm.test(\"Изменение операции по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(403);\r",
 									"});"
 								],
@@ -1268,45 +1365,13 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}},\r\n  \"category_id\" : 1\r\n}",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}}\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": {
-							"raw": "{{localhost}}/transactions/10",
-							"host": [
-								"{{localhost}}"
-							],
-							"path": [
-								"transactions",
-								"10"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Удаление операции по ID",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "0d724d56-5f61-4481-8faf-32eb89174d61",
-								"exec": [
-									"pm.test(\"Удаление операции по ID успешно\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(204);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
 						"url": {
 							"raw": "{{localhost}}/transactions/1",
 							"host": [
@@ -1321,6 +1386,38 @@
 					"response": []
 				},
 				{
+					"name": "Удаление операции по ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0d724d56-5f61-4481-8faf-32eb89174d61",
+								"exec": [
+									"pm.test(\"Удаление операции по ID\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/transactions/{{transaction_id}}",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions",
+								"{{transaction_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Удаление операции по ID (ID не существует)",
 					"event": [
 						{
@@ -1328,7 +1425,7 @@
 							"script": {
 								"id": "209cc67d-db09-4f43-aa54-d51a443ddc3a",
 								"exec": [
-									"pm.test(\"Удаление операции по ID успешно\", function () {\r",
+									"pm.test(\"Удаление операции по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(404);\r",
 									"});"
 								],
@@ -1360,7 +1457,7 @@
 							"script": {
 								"id": "df1bbfba-b702-45a6-beaf-95b356b4d4ff",
 								"exec": [
-									"pm.test(\"Удаление операции по ID успешно\", function () {\r",
+									"pm.test(\"Удаление операции по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(403);\r",
 									"});"
 								],
@@ -1372,13 +1469,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{localhost}}/transactions/10",
+							"raw": "{{localhost}}/transactions/1",
 							"host": [
 								"{{localhost}}"
 							],
 							"path": [
 								"transactions",
-								"10"
+								"1"
 							]
 						}
 					},
@@ -1518,45 +1615,57 @@
 	],
 	"variable": [
 		{
-			"id": "c771a052-cf62-4559-a622-8041bb656085",
+			"id": "ec03d26b-f63d-4761-877f-89ad64effe19",
 			"key": "localhost",
 			"value": "127.0.0.1:5000",
 			"type": "string"
 		},
 		{
-			"id": "37588980-559c-45de-b207-7903db8ed246",
+			"id": "5955b335-cf4b-4a27-a8c3-d1cac8bd98de",
 			"key": "basic_password",
 			"value": "12345",
 			"type": "string"
 		},
 		{
-			"id": "62ebe20c-f2a5-485c-abd4-9cbfa81053ad",
+			"id": "3f61cea4-5fd4-4d82-a315-6d9a90ab986d",
 			"key": "email",
 			"value": "user_one@hds.com",
 			"type": "string"
 		},
 		{
-			"id": "55a8c791-c5e0-4d90-8b0a-bfe511ad1713",
+			"id": "7bd40bf0-5b3a-49f0-979d-f5c76abce129",
 			"key": "first_name",
 			"value": "Vasili",
 			"type": "string"
 		},
 		{
-			"id": "8d49cd3f-42a9-416b-b946-00ec2a44ae57",
+			"id": "6c8b2359-a743-4637-ae0c-89cd66fc5104",
 			"key": "last_name",
 			"value": "Petrov",
 			"type": "string"
 		},
 		{
-			"id": "99101035-6c11-465c-a5bb-470315774b9d",
+			"id": "0ce5bc7d-6e92-480e-9461-b6c8a4195c3b",
 			"key": "account_id",
-			"value": "",
+			"value": "1",
 			"type": "string"
 		},
 		{
-			"id": "40adfb31-0ed6-449c-8fa9-0191517817b8",
+			"id": "2e333188-ae04-436c-af84-25b2ac869459",
 			"key": "transaction_type",
-			"value": "",
+			"value": "income",
+			"type": "string"
+		},
+		{
+			"id": "279e769e-ea37-4e47-9dcb-4dcc64a0369e",
+			"key": "transaction_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"id": "6ccc01f3-dec0-4410-98a1-d374d4c1c43a",
+			"key": "category_id",
+			"value": "1",
 			"type": "string"
 		}
 	],
