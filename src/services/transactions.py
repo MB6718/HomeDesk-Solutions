@@ -7,6 +7,9 @@ class TransactionsServiceError(ServiceError):
 class CategoryDoesNotExistError(TransactionsServiceError):
     pass
 
+class CategoryDoesNotOwnerError(TransactionsServiceError):
+	pass
+
 class TransactionsService:
 	def __init__(self, connection):
 		self.connection = connection
@@ -15,7 +18,7 @@ class TransactionsService:
 		cur = self.connection.cursor()
 		cur.execute("""
 			SELECT *
-			FROM category AS c
+			FROM categories AS c
 			WHERE c.id = ?
 			""",
 			(category_id,)
@@ -24,9 +27,25 @@ class TransactionsService:
 		if category is None:
 			raise CategoryDoesNotExistError
 	
+	def owner_category_check(self, category_id, account_id):
+		cur = self.connection.cursor()
+		cur.execute("""
+			SELECT c.account_id
+			FROM categories AS c
+			WHERE c.id = ?
+			""",
+			(category_id,)
+		)
+		category = dict(cur.fetchone())
+		if category['account_id'] is not account_id:
+			raise CategoryDoesNotOwnerError
+	
 	def add_transaction(self, transaction):
 		""" Добавление транзакции в БД """
-		self.exist_category_check(transaction['category_id'])
+		category_id = transaction['category_id']
+		account_id = transaction['account_id']
+		self.exist_category_check(category_id)
+		self.owner_category_check(category_id, account_id)
 		cur = self.connection.execute("""
 			INSERT INTO transactions
 				(date, type, amount, comment, category_id, account_id)
@@ -59,7 +78,10 @@ class TransactionsService:
 	def patch_transaction(self, transaction, transaction_id):
 		""" Изменение транзакции в БД """
 		if 'category_id' in transaction:
-			self.exist_category_check(transaction['category_id'])
+			category_id = transaction['category_id']
+			account_id = transaction['account_id']
+			self.exist_category_check(category_id)
+			self.owner_category_check(category_id, account_id)
 		for name, value in transaction.items():
 			cur = self.connection.execute(f"""
 				UPDATE transactions
