@@ -1,10 +1,6 @@
 import sqlite3
 
-from marshmallow import (
-	Schema,
-	fields,
-	ValidationError
-)
+from marshmallow import ValidationError
 
 from flask import (
 	Blueprint,
@@ -16,14 +12,9 @@ from werkzeug.security import generate_password_hash
 
 from database import db
 
+from services.validations import UsersSchema
+
 bp = Blueprint('users', __name__)
-
-
-class UsersSchema(Schema):
-	email = fields.Email()
-	password = fields.Str()
-	first_name = fields.Str()
-	last_name = fields.Str()
 
 
 @bp.route('', methods=['POST'])
@@ -45,19 +36,21 @@ def users():
 	with db.connection as con:
 		try:
 			con.execute("""
-				INSERT INTO Account (first_name, last_name, email, password)
+				INSERT INTO accounts (first_name, last_name, email, password)
 				VALUES (?, ?, ?, ?)
-				""",(first_name, last_name, email, password_hash)
-				)
+				""",
+				(first_name, last_name, email, password_hash)
+			)
 			con.commit()
 		except sqlite3.IntegrityError:
 			return 'Данный пользователь уже существует', 409
 
 		cur = con.execute("""
-		SELECT id, first_name, last_name, email
-		FROM account
-		WHERE email=?""",
+			SELECT id, first_name, last_name, email
+			FROM accounts
+			WHERE email = ?
+			""",
 			(email,)
 		)
 		response = cur.fetchone()
-	return jsonify(dict(response)), 200
+	return jsonify(dict(response)), 201
