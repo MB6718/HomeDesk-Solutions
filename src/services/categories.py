@@ -44,6 +44,8 @@ class CategoriesService:
 		parent_category['subcategory'] = subcategory
 		return parent_category
 
+	
+
 	def check_exist_parent_category(self, parent_id, account_id):
 		cur = self.connection.cursor()
 		cur.execute(
@@ -67,6 +69,7 @@ class CategoriesService:
 			raise NotEnoughRightsError
 		return parent_category
 
+
 	def check_exist_category(self, account_id, name_category):
 		cur = self.connection.cursor()
 		query = (
@@ -80,6 +83,7 @@ class CategoriesService:
 		if category is not None:
 			raise CategoryExistError(category)
 		return query
+
 
 	def add_category(self, category, account_id):
 		""" Создание категории в БД """
@@ -128,6 +132,8 @@ class CategoriesService:
 				""")
 		self.connection.commit()
 
+		
+
 	def patch_category(self, request_json, category_id, account_id):
 		cur = self.connection.cursor()
 		parent_id = request_json.get('parent_id')
@@ -139,10 +145,11 @@ class CategoriesService:
 				value = value.lower()
 				self.check_exist_category(account_id, value)
 			cur.execute(f"""
-				UPDATE categories
-				SET {key} = '{value}'
-				WHERE id= {category_id}
-				""")
+		        UPDATE categories
+		        SET {key} = '{value}'
+		        WHERE id= {category_id}
+		    """)
+
 		query = (
 			'SELECT c.name, c.id '
 			'FROM categories AS c '

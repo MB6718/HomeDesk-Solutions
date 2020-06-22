@@ -39,4 +39,5 @@ def must_be_owner(who_is=None):
 					return '', 403
 			return view_func(*args, **kwargs)
 		return wrapper
+
 	return decorator
