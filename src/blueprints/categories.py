@@ -9,7 +9,7 @@ from flask.views import MethodView
 from database import db
 
 from auth import (
-	category_owner,
+	must_be_owner,
 	auth_required
 )
 
@@ -30,7 +30,7 @@ class CategoriesView(MethodView):
 			service = CategoriesService(con)
 			cur = con.execute("""
 				SELECT id, name
-				FROM category
+				FROM categories
 				WHERE account_id = ? and parent_id is NULL
 				""",
 				(account_id,)
@@ -66,13 +66,13 @@ class CategoriesView(MethodView):
 
 class CategoryIDView(MethodView):
 	@auth_required
-	@category_owner
+	@must_be_owner
 	def get(self, account_id, category_id):
 		"""Возвращает дерево категорий, начиная с category_id категории"""
 		with db.connection as con:
 			cur = con.execute("""
 				SELECT id, name
-				FROM category
+				FROM categories
 				WHERE account_id = ? and id = ?
 				""",
 				(account_id, category_id,)
@@ -87,21 +87,23 @@ class CategoryIDView(MethodView):
 			return jsonify(tree_category), 201
 	
 	@auth_required
-	@category_owner
+	@must_be_owner
 	def patch(self, category_id, account_id):
 		"""Функция для внесений изменений в категорию"""
 		request_json = request.json
 		with db.connection as con:
 			service = CategoriesService(con)
 			try:
-				category = service.patch_category(request_json, category_id)
+				category = service.patch_category(request_json, category_id, account_id)
 			except CategoryDoesNotExistError:
 				return '', 404
+			except CategoryExistError as e:
+				return jsonify(dict(e.category)), 409
 			else:
 				return jsonify(category), 201
 	
 	@auth_required
-	@category_owner
+	@must_be_owner
 	def delete(self, category_id, account_id):
 		"""Функция для удаления категории и всех ёё потомков"""
 		with db.connection as con:

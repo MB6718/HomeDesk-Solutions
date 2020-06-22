@@ -23,7 +23,7 @@ class CategoriesService:
 	def get_tree_subcategories(con, account_id, parent_category):
 		cur = con.execute("""
 			SELECT id, name
-			FROM category
+			FROM categories
 			WHERE account_id=? and parent_id = ?
 			""",
 			(account_id, parent_category['id'])
@@ -40,11 +40,11 @@ class CategoriesService:
 		return parent_category
 	
 		
-	def check_exist_category(self, parent_id):
+	def check_exist_parent_category(self, parent_id):
 		cur = self.connection.cursor()
 		cur.execute(
 			'SELECT c.name, c.id '
-			'FROM category AS c '
+			'FROM categories AS c '
 			'WHERE c.id = ?',
 			(parent_id,)
 		)
@@ -54,14 +54,11 @@ class CategoriesService:
 		return parent_category
 	
 	
-	def add_category(self, category, account_id):
-		""" Создание категории в БД """
+	def check_exist_category(self, account_id, name_category):
 		cur = self.connection.cursor()
-		name_category = category.get('name').lower()
-		parent_id = category.get('parent_id')
 		query = (
 			'SELECT c.name, c.id '
-			'FROM category AS c '
+			'FROM categories AS c '
 			'WHERE c.name = ? AND account_id = ?'
 		)
 		cur.execute(query, (name_category, account_id,))
@@ -69,12 +66,20 @@ class CategoriesService:
 		
 		if category is not None:
 			raise CategoryExistError(category)
-		
+		return query
+	
+	
+	def add_category(self, category, account_id):
+		""" Создание категории в БД """
+		cur = self.connection.cursor()
+		name_category = category.get('name').lower()
+		parent_id = category.get('parent_id')
+		query = self.check_exist_category(account_id, name_category)
 		if parent_id:
 			parent_category = self.check_exist_category(parent_id)
 
 		cur.execute(
-			'INSERT INTO category (account_id, parent_id, name) '
+			'INSERT INTO categories (account_id, parent_id, name) '
 			'VALUES (?, ?, ?) ',
 			(account_id, parent_id, name_category)
 		)
@@ -98,7 +103,7 @@ class CategoriesService:
 		for id in list_id:
 			cur.execute(f"""
 				SELECT id
-				FROM category
+				FROM categories
 				WHERE parent_id = {id}
 				""")
 			result = cur.fetchall()
@@ -107,28 +112,29 @@ class CategoriesService:
 					list_id.append(elem[0])
 
 			cur.execute(f"""
-				DELETE FROM category
+				DELETE FROM categories
 				WHERE id = {id}
 				""")
 		self.connection.commit()
 		
 	
-	def patch_category(self, request_json, category_id):
+	def patch_category(self, request_json, category_id, account_id):
 		cur = self.connection.cursor()
 		parent_id = request_json.get('parent_id')
 		if parent_id:
 			parent_category = self.check_exist_category(parent_id)
 		for key, value in request_json.items():
 			if key == 'name':
+				self.check_exist_category(account_id, value)
 				value = value.lower()
 			cur.execute(f"""
-		        UPDATE category
+		        UPDATE categories
 		        SET {key} = '{value}'
 		        WHERE id= {category_id}
 		    """)
 		query = (
 			'SELECT c.name, c.id '
-			'FROM category AS c '
+			'FROM categories AS c '
 			'WHERE id = ? '
 		)
 		cur.execute(query, (category_id,))
