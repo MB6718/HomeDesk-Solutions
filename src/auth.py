@@ -13,45 +13,29 @@ def auth_required(view_func):
 		return view_func(*args, **kwargs, account_id=account_id)
 	return wrapper
 
-def transaction_owner(view_func):
-	@wraps(view_func)
-	def wrapper(*args, **kwargs):
-		with db.connection as con:
-			cur = con.execute("""
-				SELECT t.account_id
-				FROM transactions AS t
-				WHERE t.id = ?
-				""",
-				(kwargs['transaction_id'],)
-			)
-			transaction = cur.fetchone()
-		
-		if not transaction:
-			return '', 404
-		
-		if transaction['account_id'] != kwargs['account_id']:
-			return '', 403
-		
-		return view_func(*args, **kwargs)
-	return wrapper
 
-
-def category_owner(view_func):
-	@wraps(view_func)
-	def wrapper(*args, **kwargs):
-		account_id = session.get('account_id')
-		with db.connection as con:
-			cur = con.execute("""
-			SELECT *
-			FROM category
-			WHERE id = ? AND account_id = ?
-			""",
-				(kwargs['category_id'],account_id)
-			)
-
-			ans = cur.fetchone()
-		if not ans:
-			return '', 403
-		return view_func(*args, **kwargs)
-
-	return wrapper
+def must_be_owner(who_is=None):
+	def decorator(view_func):
+		@wraps(view_func)
+		def wrapper(*args, **kwargs):
+			if who_is is not None and who_is in ('transaction', 'category'):
+				if who_is is 'category':
+					name = 'categories'
+				else:
+					name = 'transactions'
+				with db.connection as con:
+					cur = con.execute(f"""
+						SELECT f.account_id
+						FROM {name} AS f
+						WHERE f.id = ?
+						""",
+						(kwargs[f'{who_is}_id'],)
+					)
+					result = cur.fetchone()
+				if not result:
+					return '', 404
+				if result['account_id'] != kwargs['account_id']:
+					return '', 403
+			return view_func(*args, **kwargs)
+		return wrapper
+	return decorator
