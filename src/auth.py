@@ -44,13 +44,14 @@ def category_owner(view_func):
 			cur = con.execute("""
 			SELECT *
 			FROM category
-			WHERE id = ? AND account_id = ?
+			WHERE id = ?
 			""",
-				(kwargs['category_id'],account_id)
+				(kwargs['category_id'],)
 			)
-
-			ans = cur.fetchone()
+			ans = dict(cur.fetchone())
 		if not ans:
+			return '', 404
+		if ans['account_id'] != account_id:
 			return '', 403
 		return view_func(*args, **kwargs)
 
