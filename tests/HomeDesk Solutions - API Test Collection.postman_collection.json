@@ -278,6 +278,47 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Аутентификация (заново, для автотеста)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3bac7d7d-c53c-4476-a455-159077111c5f",
+								"exec": [
+									"pm.test(\"Успешная аутентификация пользователя\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"email\" : \"{{email}}\",\r\n\t\"password\" : \"{{basic_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/auth/login",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -1477,43 +1518,43 @@
 	],
 	"variable": [
 		{
-			"id": "ea21a0ff-066c-4479-b38a-2c5d414b4908",
+			"id": "c771a052-cf62-4559-a622-8041bb656085",
 			"key": "localhost",
 			"value": "127.0.0.1:5000",
 			"type": "string"
 		},
 		{
-			"id": "e06c65fe-07b3-45c8-8c46-69c3cc0ec981",
+			"id": "37588980-559c-45de-b207-7903db8ed246",
 			"key": "basic_password",
 			"value": "12345",
 			"type": "string"
 		},
 		{
-			"id": "0a1274ca-dfbf-44b2-a8a2-2acc38aedbfd",
+			"id": "62ebe20c-f2a5-485c-abd4-9cbfa81053ad",
 			"key": "email",
 			"value": "user_one@hds.com",
 			"type": "string"
 		},
 		{
-			"id": "d7879a17-07bb-4f3c-8289-26d61efc5b53",
+			"id": "55a8c791-c5e0-4d90-8b0a-bfe511ad1713",
 			"key": "first_name",
 			"value": "Vasili",
 			"type": "string"
 		},
 		{
-			"id": "2d8348d6-1539-4eeb-9ccf-4f1a85cf9628",
+			"id": "8d49cd3f-42a9-416b-b946-00ec2a44ae57",
 			"key": "last_name",
 			"value": "Petrov",
 			"type": "string"
 		},
 		{
-			"id": "8b5f3afe-5bdf-4df7-a665-e1800a89f12b",
+			"id": "99101035-6c11-465c-a5bb-470315774b9d",
 			"key": "account_id",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "f08613ff-bdb7-411d-af62-642a555de05e",
+			"id": "40adfb31-0ed6-449c-8fa9-0191517817b8",
 			"key": "transaction_type",
 			"value": "",
 			"type": "string"
