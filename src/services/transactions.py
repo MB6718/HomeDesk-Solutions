@@ -1,9 +1,32 @@
+from exceptions import ServiceError
+
+
+class TransactionsServiceError(ServiceError):
+    service = 'transactions'
+
+class CategoryDoesNotExistError(TransactionsServiceError):
+    pass
+
 class TransactionsService:
 	def __init__(self, connection):
 		self.connection = connection
 	
+	def exist_category_check(self, category_id):
+		cur = self.connection.cursor()
+		cur.execute("""
+			SELECT *
+			FROM category AS c
+			WHERE c.id = ?
+			""",
+			(category_id,)
+		)
+		category = cur.fetchone()
+		if category is None:
+			raise CategoryDoesNotExistError
+	
 	def add_transaction(self, transaction):
 		""" Добавление транзакции в БД """
+		self.exist_category_check(transaction['category_id'])
 		cur = self.connection.execute("""
 			INSERT INTO transactions
 				(date, type, amount, comment, category_id, account_id)
@@ -35,6 +58,8 @@ class TransactionsService:
 	
 	def patch_transaction(self, transaction, transaction_id):
 		""" Изменение транзакции в БД """
+		if 'category_id' in transaction:
+			self.exist_category_check(transaction['category_id'])
 		for name, value in transaction.items():
 			cur = self.connection.execute(f"""
 				UPDATE transactions

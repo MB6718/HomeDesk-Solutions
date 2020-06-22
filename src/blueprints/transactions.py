@@ -9,7 +9,10 @@ from flask.views import MethodView
 
 from auth import auth_required, transaction_owner
 from database import db
-from services.transactions import TransactionsService
+from services.transactions import (
+	TransactionsService,
+	CategoryDoesNotExistError,
+)
 
 bp = Blueprint('transactions', __name__)
 
@@ -38,7 +41,10 @@ class TransactionView(MethodView):
 		
 		with db.connection as con:
 			service = TransactionsService(con)
-			transaction = service.add_transaction(transaction)
+			try:
+				transaction = service.add_transaction(transaction)
+			except CategoryDoesNotExistError:
+				return '', 404
 		return jsonify(transaction), 200
 
 class TransactionIDView(MethodView):
@@ -55,13 +61,16 @@ class TransactionIDView(MethodView):
 	@auth_required
 	@transaction_owner
 	def patch(self, transaction_id, account_id):
-		""" Обработка изменения  транзакции в БД """
+		""" Обработка изменения транзакции в БД """
 		with db.connection as con:
 			service = TransactionsService(con)
-			transaction = service.patch_transaction(
-				dict(request.json),
-				transaction_id
-			)
+			try:
+				transaction = service.patch_transaction(
+					dict(request.json),
+					transaction_id
+				)
+			except CategoryDoesNotExistError:
+				return '', 404
 		return jsonify(transaction), 200
 	
 	@auth_required
