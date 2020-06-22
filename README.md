@@ -1,4 +1,4 @@
-# HomeDesk-Solutions
+# HomeDesk-Solutions <a name="top"></a>
 
 ![HomeDesk-Solutions](logo/hds-beta-logo.png)
 
@@ -7,6 +7,7 @@
 [![platform](https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20macos-LightGray)](https://ru.wikipedia.org/wiki/%D0%9A%D1%80%D0%BE%D1%81%D1%81%D0%BF%D0%BB%D0%B0%D1%82%D1%84%D0%BE%D1%80%D0%BC%D0%B5%D0%BD%D0%BD%D0%BE%D1%81%D1%82%D1%8C)
 [![license](https://img.shields.io/badge/license-GPL_v3.0-yellow)](https://github.com/MB6718/HomeDesk-Solutions/blob/master/LICENSE)
 [![framework](https://img.shields.io/badge/framework-Flask_1.1.12-ff69b4)](https://flask.palletsprojects.com/en/1.1.x/)
+[![database](https://img.shields.io/badge/database-SQLite-Green)](https://www.sqlite.org/index.html)
 
 ### Содержание
 * [Краткое описание](#description)
@@ -59,6 +60,27 @@
 		```bash
 		python -m venv .venv # создаём виртуальное окружение
 		.venv\Scripts\activate.bat # активируем виртуальное окружение
+		(.venv) python -V # проверяем версию интерпретатора Python, убеждаясь в работе окружения
+		(.venv) pip install -r requirements.txt # устанавливаем необходимые пакеты и формируем зависимости
+		(.venv) flask run # запустим локальный сервер Flask
+		```
+	5. Можно приступать к тестированию API функционала приложения
+* под Linux (Ubuntu)
+	1. Скачать архив с исходным кодом и распаковать в любую удобную папку
+	2. В корне проекта создать файл .env, содержащий четыре строки:
+		```bash
+		PYTHONPATH=src # путь к исходнику проекта
+		DB_FILE=db.sqlite # путь к файлу базы данных SQLite
+		SECRET_KEY=1234567890 # секретный ключ (!) заменить на свой
+		```
+	3. Выполнить скрипт для создания пустой БД
+		```bash
+		python3 create_db.py # после выполнения появится файл БД с именем "db.sqlite"
+		```
+	4. Создать и запустить виртуальное окружение в корне проекта, подтянуть необходимые зависимости
+		```bash
+		python3 -m venv .venv # создаём виртуальное окружение
+		.venv\Scripts\activate # активируем виртуальное окружение
 		(.venv) python -V # проверяем версию интерпретатора Python, убеждаясь в работе окружения
 		(.venv) pip install -r requirements.txt # устанавливаем необходимые пакеты и формируем зависимости
 		(.venv) flask run # запустим локальный сервер Flask
@@ -157,7 +179,7 @@ Response:
 ```
 
 <a name="postcat"></a>
-&#9660; Добавление категории, если категория удачно создана или уже существует, то возвращаем полное дерево категорий начиная с родителя (если передан в request) и заканчивая "category_name" категорией.  
+&#9660; Добавление категории, если категория удачно создана или уже существует, то возвращаем полное дерево категорий начиная с родителя (если передан в request) и заканчивая "name" категорией.  
 
 **POST** &rArr; `/categories`  
 Request:
@@ -345,15 +367,20 @@ Response:
 ### Примеры API запросов и Тесты <a name="example"></a>
 
 Для тестирования используем программу [Postman](https://www.postman.com/),
-к которой прилагается файл [HomeDesk Solutions - API Test Collection.postman_collection]()
+к которой прилагается файл [HomeDesk Solutions - API Test Collection.postman_collection](https://github.com/MB6718/HomeDesk-Solutions/blob/dev/tests/HomeDesk%20Solutions%20-%20API%20Test%20Collection.postman_collection.json)
 (см. директорию tests/) с коллекцией тестов.
 
 ### Построен с использованием <a name="build_with"></a>
 
 * [Python 3.8.3](https://www.python.org/downloads/release/python-383rc1/) - интерпретатор языка Python не ниже версии 3.8
 * [Flask 1.1.12](https://flask.palletsprojects.com/en/1.1.x/) - фреймворк для создания веб-приложений на языке Python
+* [SQLite 3.X.X](https://www.sqlite.org/index.html) - компактная встраиваемая СУБД версии 3.Х и выше
 
-Остальные зависимые модули и пакеты см. в файл [requirements.txt](https://github.com/MB6718/HomeDesk-Solutions/blob/fix/readme/requirements.txt)
+Остальные зависимые модули и пакеты см. в файл [requirements.txt](https://github.com/MB6718/HomeDesk-Solutions/blob/dev/requirements.txt)
+
+<p align="right">
+ <a href="#top">Наверх</a>
+</p>
 
 ### Авторы <a name="authors"></a>
 
