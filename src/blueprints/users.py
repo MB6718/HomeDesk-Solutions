@@ -57,7 +57,7 @@ def users():
 		SELECT id, first_name, last_name, email
 		FROM account
 		WHERE email=?""",
-		(email,)
+			(email,)
 		)
 		response = cur.fetchone()
 	return jsonify(dict(response)), 200
