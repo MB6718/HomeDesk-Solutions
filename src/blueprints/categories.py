@@ -17,6 +17,7 @@ from services.categories import (
 	CategoriesService,
 	CategoryDoesNotExistError,
 	CategoryExistError,
+	NotEnoughRightsError,
 )
 
 bp = Blueprint('categories', __name__)
@@ -59,6 +60,8 @@ class CategoriesView(MethodView):
 				category = service.add_category(category, account_id)
 			except CategoryDoesNotExistError:
 				return '', 404
+			except NotEnoughRightsError:
+				return '', 403
 			except CategoryExistError as e:
 				return jsonify(dict(e.category)), 409
 			else:
@@ -66,7 +69,7 @@ class CategoriesView(MethodView):
 
 class CategoryIDView(MethodView):
 	@auth_required
-	@must_be_owner
+	@must_be_owner('category')
 	def get(self, account_id, category_id):
 		"""Возвращает дерево категорий, начиная с category_id категории"""
 		with db.connection as con:
@@ -84,11 +87,11 @@ class CategoryIDView(MethodView):
 				account_id,
 				dict(parent_category)
 			)
-			return jsonify(tree_category), 201
+			return jsonify(tree_category), 200
 	
 	@auth_required
-	@must_be_owner
-	def patch(self, category_id, account_id):
+	@must_be_owner('category')
+	def patch(self, account_id, category_id):
 		"""Функция для внесений изменений в категорию"""
 		request_json = request.json
 		with db.connection as con:
@@ -99,12 +102,14 @@ class CategoryIDView(MethodView):
 				return '', 404
 			except CategoryExistError as e:
 				return jsonify(dict(e.category)), 409
+			except NotEnoughRightsError:
+				return '', 403
 			else:
-				return jsonify(category), 201
+				return jsonify(category), 200
 	
 	@auth_required
-	@must_be_owner
-	def delete(self, category_id, account_id):
+	@must_be_owner('category')
+	def delete(self, account_id, category_id):
 		"""Функция для удаления категории и всех ёё потомков"""
 		with db.connection as con:
 			service = CategoriesService(con)
