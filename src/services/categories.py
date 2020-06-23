@@ -85,7 +85,7 @@ class CategoriesService:
 		return query
 
 
-	def add_category(self, category, account_id):
+	def create_category(self, category, account_id):
 		""" Создание категории в БД """
 		cur = self.connection.cursor()
 		name_category = category.get('name').lower()
@@ -134,7 +134,7 @@ class CategoriesService:
 
 		
 
-	def patch_category(self, request_json, category_id, account_id):
+	def update_category(self, request_json, category_id, account_id):
 		cur = self.connection.cursor()
 		parent_id = request_json.get('parent_id')
 		if parent_id:
@@ -145,10 +145,10 @@ class CategoriesService:
 				value = value.lower()
 				self.check_exist_category(account_id, value)
 			cur.execute(f"""
-		        UPDATE categories
-		        SET {key} = '{value}'
-		        WHERE id= {category_id}
-		    """)
+				UPDATE categories
+				SET {key} = '{value}'
+				WHERE id= {category_id}
+			""")
 
 		query = (
 			'SELECT c.name, c.id '

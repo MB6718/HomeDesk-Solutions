@@ -58,7 +58,7 @@ class CategoriesView(MethodView):
 		with db.connection as con:
 			service = CategoriesService(con)
 			try:
-				category = service.add_category(category, account_id)
+				category = service.create_category(category, account_id)
 			except CategoryDoesNotExistError:
 				return '', 404
 			except NotEnoughRightsError:
@@ -99,7 +99,7 @@ class CategoryIDView(MethodView):
 		with db.connection as con:
 			service = CategoriesService(con)
 			try:
-				category = service.patch_category(request_json, category_id, account_id)
+				category = service.update_category(request_json, category_id, account_id)
 			except CategoryDoesNotExistError:
 				return '', 404
 			except CategoryExistError as e:
