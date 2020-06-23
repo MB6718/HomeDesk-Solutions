@@ -46,7 +46,7 @@ class TransactionView(MethodView):
 		with db.connection as con:
 			service = TransactionsService(con)
 			try:
-				transaction = service.add_transaction(transaction)
+				transaction = service.create_transaction(transaction)
 			except CategoryDoesNotExistError:
 				return '', 404
 			except CategoryDoesNotOwnerError:
@@ -90,7 +90,7 @@ class TransactionIDView(MethodView):
 		""" Обработка удаления транзакции из БД """
 		with db.connection as con:
 			service = TransactionsService(con)
-			service.del_transaction(transaction_id)
+			service.delete_transaction(transaction_id)
 		return '', 204
 
 

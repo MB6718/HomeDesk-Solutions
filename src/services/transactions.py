@@ -39,8 +39,8 @@ class TransactionsService:
 		category = dict(cur.fetchone())
 		if category['account_id'] is not account_id:
 			raise CategoryDoesNotOwnerError
-	
-	def add_transaction(self, transaction):
+
+	def create_transaction(self, transaction):
 		""" Добавление транзакции в БД """
 		category_id = transaction['category_id']
 		account_id = transaction['account_id']
@@ -94,7 +94,7 @@ class TransactionsService:
 		
 		return self.get_transaction(transaction_id)
 	
-	def del_transaction(self, transaction_id):
+	def delete_transaction(self, transaction_id):
 		""" Удаление транзакции из БД """
 		cur = self.connection.execute("""
 			DELETE FROM transactions
