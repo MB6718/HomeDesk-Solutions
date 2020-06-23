@@ -10,8 +10,10 @@ class CategoriesServiceError(ServiceError):
 class CategoryDoesNotExistError(CategoriesServiceError):
     pass
 
+
 class NotEnoughRightsError(CategoriesServiceError):
 	pass
+
 
 class CategoryExistError(CategoriesServiceError):
 	def __init__(self, category):
@@ -29,7 +31,7 @@ class CategoriesService:
 			FROM categories
 			WHERE account_id=? and parent_id = ?
 			""",
-			(account_id, parent_category['id'])
+				(account_id, parent_category['id'])
 		)
 		subcategory = [dict(elem) for elem in cur.fetchall()]
 		if subcategory:
@@ -41,8 +43,9 @@ class CategoriesService:
 				)
 		parent_category['subcategory'] = subcategory
 		return parent_category
+
 	
-		
+
 	def check_exist_parent_category(self, parent_id, account_id):
 		cur = self.connection.cursor()
 		cur.execute(
@@ -65,8 +68,8 @@ class CategoriesService:
 		if result['account_id'] != account_id:
 			raise NotEnoughRightsError
 		return parent_category
-	
-	
+
+
 	def check_exist_category(self, account_id, name_category):
 		cur = self.connection.cursor()
 		query = (
@@ -80,8 +83,8 @@ class CategoriesService:
 		if category is not None:
 			raise CategoryExistError(category)
 		return query
-	
-	
+
+
 	def add_category(self, category, account_id):
 		""" Создание категории в БД """
 		cur = self.connection.cursor()
@@ -106,8 +109,7 @@ class CategoriesService:
 			result = parent_category
 
 		return result
-	
-	
+
 	def delete_category(self, category_id):
 		""" Удаление категории из БД. При удаление категории родителя удаляются все наследующиеся от него категории-дети"""
 		cur = self.connection.cursor()
@@ -129,8 +131,9 @@ class CategoriesService:
 				WHERE id = {id}
 				""")
 		self.connection.commit()
+
 		
-	
+
 	def patch_category(self, request_json, category_id, account_id):
 		cur = self.connection.cursor()
 		parent_id = request_json.get('parent_id')
@@ -146,6 +149,7 @@ class CategoriesService:
 		        SET {key} = '{value}'
 		        WHERE id= {category_id}
 		    """)
+
 		query = (
 			'SELECT c.name, c.id '
 			'FROM categories AS c '

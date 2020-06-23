@@ -22,6 +22,7 @@ from services.categories import (
 
 bp = Blueprint('categories', __name__)
 
+
 class CategoriesView(MethodView):
 
 	@auth_required
@@ -66,6 +67,7 @@ class CategoriesView(MethodView):
 				return jsonify(dict(e.category)), 409
 			else:
 				return jsonify(category), 200
+
 
 class CategoryIDView(MethodView):
 	@auth_required
@@ -115,7 +117,6 @@ class CategoryIDView(MethodView):
 			service = CategoriesService(con)
 			service.delete_category(category_id)
 			return '', 204
-
 
 
 bp.add_url_rule('', view_func=CategoriesView.as_view('categories'))

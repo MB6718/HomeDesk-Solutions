@@ -1,10 +1,6 @@
 import sqlite3
 
-from marshmallow import (
-	Schema,
-	fields,
-	ValidationError
-)
+from marshmallow import ValidationError
 
 from flask import (
 	Blueprint,
@@ -16,14 +12,9 @@ from werkzeug.security import generate_password_hash
 
 from database import db
 
+from services.validations import UsersSchema
+
 bp = Blueprint('users', __name__)
-
-
-class UsersSchema(Schema):
-	email = fields.Email()
-	password = fields.Str()
-	first_name = fields.Str()
-	last_name = fields.Str()
 
 
 @bp.route('', methods=['POST'])

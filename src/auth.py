@@ -4,6 +4,7 @@ from flask import session
 
 from database import db
 
+
 def auth_required(view_func):
 	@wraps(view_func)
 	def wrapper(*args, **kwargs):
@@ -38,4 +39,5 @@ def must_be_owner(who_is=None):
 					return '', 403
 			return view_func(*args, **kwargs)
 		return wrapper
+
 	return decorator
