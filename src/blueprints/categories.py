@@ -40,7 +40,7 @@ class CategoriesView(MethodView):
 			parent_category = [dict(elem) for elem in cur.fetchall()]
 			if parent_category:
 				for i in range(len(parent_category)):
-					parent_category[i] = service.get_tree_subcategories(
+					parent_category[i] = service.get_subcategories_tree(
 						con,
 						account_id,
 						parent_category[i]
@@ -84,7 +84,7 @@ class CategoryIDView(MethodView):
 			)
 			parent_category = cur.fetchone()
 			service = CategoriesService(con)
-			tree_category = service.get_tree_subcategories(
+			tree_category = service.get_subcategories_tree(
 				con,
 				account_id,
 				dict(parent_category)

@@ -74,7 +74,7 @@ class TransactionIDView(MethodView):
 		with db.connection as con:
 			service = TransactionsService(con)
 			try:
-				transaction = service.patch_transaction(
+				transaction = service.update_transaction(
 					transaction,
 					transaction_id
 				)
