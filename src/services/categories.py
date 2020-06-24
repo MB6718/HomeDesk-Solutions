@@ -164,3 +164,14 @@ class CategoriesService:
 		
 		self.connection.commit()
 		return result
+
+
+	def get_parent_categories(self, account_id, category_id):
+		cur = self.connection.execute("""
+				SELECT id, name
+				FROM categories
+				WHERE account_id = ? and id = ?
+				""",
+				(account_id, category_id,)
+			)
+		return cur.fetchone()
