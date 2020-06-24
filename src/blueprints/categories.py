@@ -25,6 +25,7 @@ bp = Blueprint('categories', __name__)
 
 class CategoriesView(MethodView):
     
+
     @auth_required
     def get(self, account_id):
         """Возвращает деревья категорий, принадлежащих пользотелю"""
@@ -37,6 +38,7 @@ class CategoriesView(MethodView):
                 """,
                 (account_id,)
             )
+
             parent_category = [dict(elem) for elem in cur.fetchall()]
             if parent_category:
                 for i in range(len(parent_category)):
@@ -47,6 +49,7 @@ class CategoriesView(MethodView):
                     )
         return jsonify(parent_category), 200
     
+
     @auth_required
     def post(self, account_id):
         """Функция добавления категории"""
@@ -84,6 +87,7 @@ class CategoryIDView(MethodView):
             )
             parent_category = cur.fetchone()
             service = CategoriesService(con)
+
             tree_category = service.get_subcategories_tree(
                 con,
                 account_id,
@@ -91,6 +95,7 @@ class CategoryIDView(MethodView):
             )
             return jsonify(tree_category), 200
     
+
     @auth_required
     @must_be_owner('category')
     def patch(self, account_id, category_id):
