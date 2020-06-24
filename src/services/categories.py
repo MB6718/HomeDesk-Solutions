@@ -25,7 +25,7 @@ class CategoriesService:
 		self.connection = connection
 	
 	@staticmethod
-	def get_tree_subcategories(con, account_id, parent_category):
+	def get_subcategories_tree(con, account_id, parent_category):
 		cur = con.execute("""
 			SELECT id, name
 			FROM categories
@@ -36,7 +36,7 @@ class CategoriesService:
 		subcategory = [dict(elem) for elem in cur.fetchall()]
 		if subcategory:
 			for i in range(len(subcategory)):
-				subcategory[i] = CategoriesService.get_tree_subcategories(
+				subcategory[i] = CategoriesService.get_subcategories_tree(
 					con,
 					account_id,
 					subcategory[i]
@@ -46,7 +46,7 @@ class CategoriesService:
 
 	
 
-	def check_exist_parent_category(self, parent_id, account_id):
+	def parent_category_exists(self, parent_id, account_id):
 		cur = self.connection.cursor()
 		cur.execute(
 			'SELECT c.name, c.id '
@@ -70,7 +70,7 @@ class CategoriesService:
 		return parent_category
 
 
-	def check_exist_category(self, account_id, name_category):
+	def category_exists(self, account_id, name_category):
 		cur = self.connection.cursor()
 		query = (
 			'SELECT c.name, c.id '
@@ -90,9 +90,9 @@ class CategoriesService:
 		cur = self.connection.cursor()
 		name_category = category.get('name').lower()
 		parent_id = category.get('parent_id')
-		query = self.check_exist_category(account_id, name_category)
+		query = self.category_exists(account_id, name_category)
 		if parent_id:
-			parent_category = self.check_exist_parent_category(parent_id, account_id)
+			parent_category = self.parent_category_exists(parent_id, account_id)
 
 		cur.execute(
 			'INSERT INTO categories (account_id, parent_id, name) '
@@ -139,11 +139,11 @@ class CategoriesService:
 		parent_id = request_json.get('parent_id')
 		if parent_id:
 			if parent_id != 'NULL':
-				parent_category = self.check_exist_parent_category(parent_id, account_id)
+				parent_category = self.parent_category_exists(parent_id, account_id)
 		for key, value in request_json.items():
 			if key == 'name':
 				value = value.lower()
-				self.check_exist_category(account_id, value)
+				self.category_exists(account_id, value)
 			cur.execute(f"""
 				UPDATE categories
 				SET {key} = '{value}'
