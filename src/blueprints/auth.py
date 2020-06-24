@@ -19,7 +19,7 @@ def login():
     password = request_json.get('password')
     if not email or not password:
         return '', 400
-
+    
     with db.connection as con:
         service = AuthService(con)
         user = service.login_user(email)
