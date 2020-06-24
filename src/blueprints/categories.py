@@ -16,14 +16,15 @@ from auth import (
 from services.categories import (
     CategoriesService,
     CategoryDoesNotExistError,
-    CategoryExistError,
-    NotEnoughRightsError,
+    ConflictError,
+    PermissionError,
 )
 
 bp = Blueprint('categories', __name__)
 
 
 class CategoriesView(MethodView):
+    
 
     @auth_required
     def get(self, account_id):
@@ -35,8 +36,9 @@ class CategoriesView(MethodView):
                 FROM categories
                 WHERE account_id = ? and parent_id is NULL
                 """,
-                    (account_id,)
-                )
+                (account_id,)
+            )
+
             parent_category = [dict(elem) for elem in cur.fetchall()]
             if parent_category:
                 for i in range(len(parent_category)):
@@ -46,6 +48,7 @@ class CategoriesView(MethodView):
                         parent_category[i]
                     )
         return jsonify(parent_category), 200
+    
 
     @auth_required
     def post(self, account_id):
@@ -60,10 +63,10 @@ class CategoriesView(MethodView):
             try:
                 category = service.create_category(category, account_id)
             except CategoryDoesNotExistError:
-                return '', 404
-            except NotEnoughRightsError:
+                return '', 400
+            except PermissionError:
                 return '', 403
-            except CategoryExistError as e:
+            except ConflictError as e:
                 return jsonify(dict(e.category)), 409
             else:
                 return jsonify(category), 200
@@ -75,14 +78,23 @@ class CategoryIDView(MethodView):
     def get(self, account_id, category_id):
         """Возвращает дерево категорий, начиная с category_id категории"""
         with db.connection as con:
+            cur = con.execute("""
+                SELECT id, name
+                FROM categories
+                WHERE account_id = ? and id = ?
+                """,
+                (account_id, category_id,)
+            )
+            parent_category = cur.fetchone()
             service = CategoriesService(con)
-            parent_category = service.get_parent_categories(account_id, category_id)
+
             tree_category = service.get_subcategories_tree(
                 con,
                 account_id,
                 dict(parent_category)
             )
             return jsonify(tree_category), 200
+    
 
     @auth_required
     @must_be_owner('category')
@@ -94,14 +106,14 @@ class CategoryIDView(MethodView):
             try:
                 category = service.update_category(request_json, category_id, account_id)
             except CategoryDoesNotExistError:
-                return '', 404
-            except CategoryExistError as e:
+                return '', 400
+            except ConflictError as e:
                 return jsonify(dict(e.category)), 409
-            except NotEnoughRightsError:
+            except PermissionError:
                 return '', 403
             else:
                 return jsonify(category), 200
-
+    
     @auth_required
     @must_be_owner('category')
     def delete(self, account_id, category_id):
