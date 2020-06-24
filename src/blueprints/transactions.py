@@ -3,20 +3,27 @@ from datetime import datetime
 from flask import (
 	Blueprint,
 	request,
-	jsonify
+	jsonify,
 )
 from flask.views import MethodView
 
-from auth import auth_required, transaction_owner
+from auth import (
+	must_be_owner,
+	auth_required,
+)
 from database import db
-from services.transactions import TransactionsService
+from services.transactions import (
+	TransactionsService,
+	CategoryDoesNotExistError,
+	CategoryDoesNotOwnerError,
+)
 
 bp = Blueprint('transactions', __name__)
 
 class TransactionView(MethodView):
 	
 	@auth_required
-	def post(self, user_id):
+	def post(self, account_id):
 		""" Обработка добавления новой транзакции в БД """
 		transaction = request.json
 		type = transaction.get('type')
@@ -34,18 +41,23 @@ class TransactionView(MethodView):
 		if not comment:
 			transaction['comment'] = ''
 		
-		transaction['account_id'] = user_id
+		transaction['account_id'] = account_id
 		
 		with db.connection as con:
 			service = TransactionsService(con)
-			transaction = service.add_transaction(transaction)
+			try:
+				transaction = service.create_transaction(transaction)
+			except CategoryDoesNotExistError:
+				return '', 404
+			except CategoryDoesNotOwnerError:
+				return '', 403
 		return jsonify(transaction), 200
 
 class TransactionIDView(MethodView):
 
 	@auth_required
-	@transaction_owner
-	def get(self, transaction_id, user_id):
+	@must_be_owner('transaction')
+	def get(self, transaction_id, account_id):
 		""" Обработка получения транзакции из БД """
 		with db.connection as con:
 			service = TransactionsService(con)
@@ -53,24 +65,32 @@ class TransactionIDView(MethodView):
 		return jsonify(transaction), 200
 	
 	@auth_required
-	@transaction_owner
-	def patch(self, transaction_id, user_id):
-		""" Обработка изменения  транзакции в БД """
+	@must_be_owner('transaction')
+	def patch(self, transaction_id, account_id):
+		""" Обработка изменения транзакции в БД """
+		transaction = dict(request.json)
+		transaction['account_id'] = account_id
+		
 		with db.connection as con:
 			service = TransactionsService(con)
-			transaction = service.patch_transaction(
-				dict(request.json),
-				transaction_id
-			)
+			try:
+				transaction = service.update_transaction(
+					transaction,
+					transaction_id
+				)
+			except CategoryDoesNotExistError:
+				return '', 404
+			except CategoryDoesNotOwnerError:
+				return '', 403
 		return jsonify(transaction), 200
 	
 	@auth_required
-	@transaction_owner
-	def delete(self, transaction_id, user_id):
+	@must_be_owner('transaction')
+	def delete(self, transaction_id, account_id):
 		""" Обработка удаления транзакции из БД """
 		with db.connection as con:
 			service = TransactionsService(con)
-			service.del_transaction(transaction_id)
+			service.delete_transaction(transaction_id)
 		return '', 204
 
 

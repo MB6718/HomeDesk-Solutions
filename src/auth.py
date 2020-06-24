@@ -4,6 +4,7 @@ from flask import session
 
 from database import db
 
+
 def auth_required(view_func):
     @wraps(view_func)
     def wrapper(*args, **kwargs):
