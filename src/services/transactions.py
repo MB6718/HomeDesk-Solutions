@@ -13,8 +13,8 @@ class CategoryDoesNotOwnerError(TransactionsServiceError):
 class TransactionsService:
 	def __init__(self, connection):
 		self.connection = connection
-	
-	def exist_category_check(self, category_id):
+
+	def category_exists(self, category_id):
 		cur = self.connection.cursor()
 		cur.execute("""
 			SELECT *
@@ -26,8 +26,8 @@ class TransactionsService:
 		category = cur.fetchone()
 		if category is None:
 			raise CategoryDoesNotExistError
-	
-	def owner_category_check(self, category_id, account_id):
+
+	def is_category_owner(self, category_id, account_id):
 		cur = self.connection.cursor()
 		cur.execute("""
 			SELECT c.account_id
@@ -39,13 +39,13 @@ class TransactionsService:
 		category = dict(cur.fetchone())
 		if category['account_id'] is not account_id:
 			raise CategoryDoesNotOwnerError
-	
-	def add_transaction(self, transaction):
+
+	def create_transaction(self, transaction):
 		""" Добавление транзакции в БД """
 		category_id = transaction['category_id']
 		account_id = transaction['account_id']
-		self.exist_category_check(category_id)
-		self.owner_category_check(category_id, account_id)
+		self.category_exists(category_id)
+		self.is_category_owner(category_id, account_id)
 		cur = self.connection.execute("""
 			INSERT INTO transactions
 				(date, type, amount, comment, category_id, account_id)
@@ -75,13 +75,13 @@ class TransactionsService:
 		
 		return dict(cur.fetchone())
 	
-	def patch_transaction(self, transaction, transaction_id):
+	def update_transaction(self, transaction, transaction_id):
 		""" Изменение транзакции в БД """
 		if 'category_id' in transaction:
 			category_id = transaction['category_id']
 			account_id = transaction['account_id']
-			self.exist_category_check(category_id)
-			self.owner_category_check(category_id, account_id)
+			self.category_exists(category_id)
+			self.is_category_owner(category_id, account_id)
 		for name, value in transaction.items():
 			cur = self.connection.execute(f"""
 				UPDATE transactions
@@ -94,7 +94,7 @@ class TransactionsService:
 		
 		return self.get_transaction(transaction_id)
 	
-	def del_transaction(self, transaction_id):
+	def delete_transaction(self, transaction_id):
 		""" Удаление транзакции из БД """
 		cur = self.connection.execute("""
 			DELETE FROM transactions

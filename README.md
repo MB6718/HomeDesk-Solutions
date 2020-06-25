@@ -16,18 +16,18 @@
 * [Спецификация (Формат описания API запросов/ответов)](#apispec)
 	* [POST /auth/login](#login)
 	* [POST /auth/logout](#logout)
-	* [POST /users](#usersreg)
-	* [GET /categories](#getcat)
-	* [GET /categories/&lt;int:category_id&gt;](#getcat_id)
-	* [POST /categories](#postcat)
-	* [PATCH /categories/&lt;int:category_id&gt;](#patchcat_id)
-	* [DELETE /categories/&lt;int:category_id&gt;](#deletecat_id)
+	* [POST /users](#user_registration)
+	* [GET /categories](#get_category)
+	* [GET /categories/&lt;int:category_id&gt;](#get_category_id)
+	* [POST /categories](#add_category)
+	* [PATCH /categories/&lt;int:category_id&gt;](#edit_category_id)
+	* [DELETE /categories/&lt;int:category_id&gt;](#del_category_id)
 	* [POST /transactions](#posttrans)
-	* [GET /transactions/&lt;int:transaction_id&gt;](#gettrans_id)
+	* [GET /transactions/&lt;int:transaction_id&gt;](#get_transaction_id)
 	* [PATCH /transactions/&lt;int:transaction_id&gt;](#patchtrans_id)
 	* [DELETE /transactions/&lt;int:transaction_id&gt;](#deltrans_id)
-	* [GET /report](#getreport)
-* [Примеры API запросов и Тесты](#example)
+	* [GET /report](#get_report)
+* [Примеры API запросов и Тесты](#examples)
 * [Построен с использованием](#build_with)
 * [Авторы](#authors)
 * [Лицензия](#license)
@@ -61,11 +61,11 @@
 		python -m venv .venv # создаём виртуальное окружение
 		.venv\Scripts\activate.bat # активируем виртуальное окружение
 		(.venv) python -V # проверяем версию интерпретатора Python, убеждаясь в работе окружения
-		(.venv) pip install -r requirements.txt # устанавливаем необходимые пакеты и формируем зависимости
+		(.venv) pip install -r requirements.txt # устанавливаем необходимые пакеты
 		(.venv) flask run # запустим локальный сервер Flask
 		```
 	5. Можно приступать к тестированию API функционала приложения
-* под Linux (Ubuntu)
+* под Linux (Ubuntu 20.04)
 	1. Скачать архив с исходным кодом и распаковать в любую удобную папку
 	2. В корне проекта создать файл .env, содержащий четыре строки:
 		```bash
@@ -80,9 +80,9 @@
 	4. Создать и запустить виртуальное окружение в корне проекта, подтянуть необходимые зависимости
 		```bash
 		python3 -m venv .venv # создаём виртуальное окружение
-		.venv\Scripts\activate # активируем виртуальное окружение
+		source .venv/bin/activate # активируем виртуальное окружение
 		(.venv) python -V # проверяем версию интерпретатора Python, убеждаясь в работе окружения
-		(.venv) pip install -r requirements.txt # устанавливаем необходимые пакеты и формируем зависимости
+		(.venv) pip install -r requirements.txt # устанавливаем необходимые пакеты
 		(.venv) flask run # запустим локальный сервер Flask
 		```
 	5. Можно приступать к тестированию API функционала приложения
@@ -95,7 +95,7 @@
 * запись вида [type] обозначает список значений типа type
 
 <a name="login"></a> 
-&#9660; Авторизация: вход и выход.  
+&#9660; Аутентификация: вход и выход.  
 
 **POST** &rArr; `/auth/login`  
 Request:
@@ -105,22 +105,27 @@ Request:
   "password" : str
 }
 ```
-<p align="right"><a href="#top">[ Наверх ]</a></p>
+Response code:
+> **200** - Вход произведён успешно  
+> **400** - Не задано обязательное поле в JSON запросе  
+> **403** - Неверный пароль или Логин не зарегистрирован в системе
 
 <a name="logout"></a>
 **POST** &rArr; `/auth/logout`  
+Response code:
+> **200** - Выход произведён успешно
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
-<a name="usersreg"></a>
+<a name="user_registration"></a>
 &#9660; Регистрация нового пользователя в системе.  
 
 **POST** &rArr; `/users`  
 Request:
 ```
 {
-  "first_name" : str
-  "last_name" : str
-  "email" : str
+  "first_name" : str,
+  "last_name" : str,
+  "email" : str,
   "password" : str
 }
 ```
@@ -128,15 +133,19 @@ Response:
 ```
 {
   "id" : int, 
-  "first_name" : str
-  "last_name" : str
+  "first_name" : str,
+  "last_name" : str,
   "email" : str
 }
 ```
+Response code:
+> **201** - Пользователь успешно зарегистрирован  
+> **400** - Не задано обязательное поле в JSON запросе  
+> **409** - Логин `email` уже существует (зарегистрирован) в системе
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
-<a name="getcat"></a>
-&#9660; Получение информации о всех имеющихся категориях пользователя по его ID в текущей сессии. Доступно только аутентифицированным пользователям. 
+<a name="get_category"></a>
+&#9660; Получение информации о всех имеющихся категориях пользователя по его ID в текущей сессии. Доступно только аутентифицированному пользователю.  
 
 **GET** &rArr; `/categories`  
 Response:
@@ -161,16 +170,19 @@ Response:
   }
 ]
 ```
+Response code:
+> **200** - Категория/дерево категорий получено успешно
+> **403** - Получение категорий невозможно, пользователь не аутентифицирован
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
-<a name="getcat_id"></a>
-&#9660; Возвращаем полное дерево категорий начиная с категории category_id. Если категория не содержит дочерних категорий, выводим только её. 
+<a name="get_category_id"></a>
+&#9660; Возвращаем полное дерево категорий начиная с категории "category_id". Если категория не содержит дочерних категорий, выводим только её.  
 
 **GET** &rArr; `/categories/<int:category_id>`  
 Response:
 ```
 {
-  "id" : <category_id>,
+  "id" : int, <category_id>
   "name" : str,
   "subcategory" : [
     {
@@ -184,16 +196,20 @@ Response:
   ]
 }
 ```
+Response code:
+> **200** - Категория/дерево категорий получено успешно  
+> **403** - Тек. пользователь не является владельцем `category_id` категории    
+> **404** - Категория `category_id` не существует
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
-<a name="postcat"></a>
-&#9660; Добавление категории, если категория удачно создана или уже существует, то возвращаем полное дерево категорий начиная с родителя (если передан в request) и заканчивая "name" категорией.  
+<a name="add_category"></a>
+&#9660; Добавление категории, если категория удачно создана или уже существует, то возвращаем полное дерево категорий начиная с родителя (если передан в request) и заканчивая "name" категорией. Доступно только аутентифицированному пользователю.  
 
 **POST** &rArr; `/categories`  
 Request:
 ```
 {
-  "name" : str
+  "name" : str,
   "parent_id" : ?int 
 }
 ```
@@ -205,7 +221,7 @@ Response (Если указан "parent_id"):
   "subcategory" : 
   {
     "id" : int,
-    "name" : str,
+    "name" : str
   }
 }
 ```
@@ -213,19 +229,25 @@ Response (в иных случаях):
 ```
 {
   "id" : int,
-  "name" : str,
+  "name" : str
 }
 ```
+Response code:
+> **200** - Категория создана успешно  
+> **400** - Не задано обязательное поле `name` в JSON запросе  
+> **403** - Тек. пользователь не является владельцем `parent_id` категории  
+> **404** - Категория `parent_id` не существует  
+> **409** - Категория с именем `name` уже существует
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
-<a name="patchcat_id"></a>
-&#9660; Изменить категорию может только создатель. Обновляем значение parent_id в связи, если в request пришёл id нового родителя. 
+<a name="edit_category_id"></a>
+&#9660; Редактирование существующей категории. Обновляем имя "name" категории и/или значение "parent_id" связи, если в request пришёл "id" нового родителя. Редактировать категорию может только владелец (пользователь, создавший её). Доступно только аутентифицированному пользователю.  
 
 **PATCH** &rArr; `/categories/<int:category_id>`  
 Request:
 ```
 {
-  "name" : str
+  "name" : ?str,
   "parent_id" : ?int 
 }
 ```
@@ -237,7 +259,7 @@ Response (Если указан "parent_id"):
   "subcategory" : 
   {
     "id" : int,
-    "name" : str,
+    "name" : str
   }
 }
 ```
@@ -245,127 +267,153 @@ Response (в иных случаях):
 ```
 {
   "id" : int,
-  "name" : str,
+  "name" : str
 }
 ```
+Response code:
+> **200** - Категория изменена успешно  
+> **403** - Тек. пользователь не является владельцем `parent_id` категории  
+> **404** - Категория `parent_id` не существует  
+> **409** - Категория с именем `name` уже существует
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
-<a name="deletecat_id"></a>
-&#9660; Удаляем связь между пользователем и этой категорией и каскадно все наследующиеся от нее категории (связи). 
+<a name="del_category_id"></a>
+&#9660; Удаление категории. Удаляем категорию и каскадно все наследующие от нее категории (связи). Удалить категорию может только владелец (пользователь, создавший её). Доступно только аутентифицированному пользователю.  
 
 **DELETE** &rArr; `/categories/<int:category_id>`
+Response code:
+> **204** - Категория удалена успешно  
+> **403** - Тек. пользователь не является владельцем `category_id` категории  
+> **404** - Категория `category_id` не существует
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
 <a name="posttrans"></a>
-&#9660; Добавление финансовой операции, доступно только аутентифицированному пользователю.
+&#9660; Добавление финансовой операции. Доступно только аутентифицированному пользователю.  
 
 **POST** &rArr; `/transactions`  
 Request:
 ```
 {
-  "type" : str
-  "amount" : str (дробное число типа 189945,56)
-  "comment" : ?str
-  "date" : ?int (timestamp, default=current_date/time)
+  "type" : str,
+  "amount" : str, (дробное число типа 189945,56)
+  "comment" : ?str,
+  "date" : ?int, (timestamp, default=current_date/time)
   "category_id" : ?int
 }
 ```
 Response:
 ```
 {
-  "id" : int  
-  "type" : str (expenses - расходы; income - доходы)
-  "amount" : str (дробное число типа 189945,56)
-  "comment" : ?str
-  "date" : ?int (timestamp) 
+  "id" : int,
+  "type" : str, (expenses - расходы; income - доходы)
+  "amount" : str, (дробное число типа 189945,56)
+  "comment" : ?str,
+  "date" : ?int, <timestamp>
   "category_id" : ?int 
 }
 ```
+Response code:
+> **200** - Операция создана успешно  
+> **400** - Не задано обязательное поле в JSON запросе  
+> **403** - Тек. пользователь не является владельцем `category_id` категории  
+> **404** - Категория `category_id` не существует
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
-<a name="gettrans_id"></a>
-&#9660; Получение информации об указанной финансовой операций по transaction_id.
+<a name="get_transaction_id"></a>
+&#9660; Получение информации об указанной финансовой операций по "transaction_id". Доступно только аутентифицированному пользователю.  
 
 **GET** &rArr; `/transactions/<int:transaction_id>`  
 Response:
 ```
 {
-  "id" : int 
-  "type" : str (expenses - расходы; income - доходы)
-  "amount" : str (дробное число типа 189945,56)
-  "comment" : ?str
-  "date" : int (timestamp) 
+  "id" : int,
+  "type" : str, (expenses - расходы; income - доходы)
+  "amount" : str, (дробное число типа 189945,56)
+  "comment" : ?str,
+  "date" : int, <timestamp>
   "category_id" : int
 }
 ```
+Response code:
+> **200** - Операция получена успешно  
+> **403** - Тек. пользователь не является владельцем `transaction_id` операции    
+> **404** - Операция `transaction_id` не существует
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
 <a name="patchtrans_id"></a>
-&#9660; Изменять транзакцию может только аутентифицированный и создавший её пользователь.
+&#9660; Редактирование финансовой операции. Редактировать операцию может только владелец (пользователь, создавший её). Доступно только аутентифицированному пользователю.  
 
 **PATCH** &rArr; `/transactions/<int:transaction_id>`  
 Request:
 ```
 {
-  "type" : ?str (expenses - расходы; income - доходы)
-  "amount" : ?str (дробное число типа 189945,56)
-  "comment" : ?str
-  "date" : ?str (timestamp) 
-  "category_id" : ?int 
+  "type" : ?str, (expenses - расходы; income - доходы)
+  "amount" : ?str, (дробное число типа 189945,56)
+  "comment" : ?str,
+  "date" : ?str, <timestamp>
+  "category_id" : ?int
 }
 ```
 Response:
 ```
 {
-  "id" : int
-  "type : str (expenses - расходы; income - доходы)
-  "amount" : str (дробное число типа 189945,56)
-  "comment" : ?str
-  "date" : str (timestamp) 
+  "id" : int,
+  "type : str, (expenses - расходы; income - доходы)
+  "amount" : str, (дробное число типа 189945,56)
+  "comment" : ?str,
+  "date" : str, <timestamp>
   "category_id" : ?int
 }
 ```
+Response code:
+> **200** - Операция изменена успешно  
+> **403** - Тек. пользователь не является владельцем `transaction_id` операции    
+> **404** - Операция `transaction_id` не существует
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
 <a name="deltrans_id"></a>
-&#9660; Удалить транзакцию может только аутентифицированный и создавший её пользователь.
+&#9660; Удаление операции. Удалить операцию может только владелец (пользователь, создавший её). Доступно только аутентифицированному пользователю.  
 
-**DELETE** &rArr; `/transactions/<int:transaction_id>`
+**DELETE** &rArr; `/transactions/<int:transaction_id>`  
+Response code:
+> **204** - Операция удалена успешно  
+> **403** - Тек. пользователь не является владельцем `transaction_id` операции    
+> **404** - Операция `transaction_id` не существует
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
-<a name="getreport"></a>
-&#9660; Получение отчета, параметры начальная дата, конечная дата и категория являются необязательными. Если категория не указана, то в отчет включаются все операции за указанный период. Для каждой операции отдается дата, сумма, описание и категория (вместе со всеми родительскими категориями). Список отсортирован по дате и отдается с пагинацией.
+<a name="get_report"></a>
+&#9660; Получение отчета. Параметры: начальная дата, конечная дата и категория являются необязательными. Если категория не указана, то в отчет включаются все операции за указанный период. Для каждой операции отдается дата, сумма, описание и категория (вместе со всеми родительскими категориями). Список отсортирован по дате и отдается с пагинацией.
 
 **GET** &rArr; `/report`  
 Request:
 ```
 Query params:
-  from = ?str
-  to = ?str
-  type = ?str (expenses - расходы; income - доходы)
-  category_id = ?int
-  page_size = ?int (default = 20)
+  from = ?str,
+  to = ?str,
+  type = ?str, (expenses - расходы; income - доходы)
+  category_id = ?int,
+  page_size = ?int, (default = 20)
   page = ?int (default = 1)
 ```
 Response:
 ```
-{	
-  "page_count" : int  
-  "page" : int 
-  "page_size" : int 
-  "item_count" : int
-  "total" : str (дробное число типа 189945,56)
+{
+  "page_count" : int,
+  "page" : int,
+  "page_size" : int,
+  "item_count" : int,
+  "total" : str, (дробное число типа 189945,56)
   "transactions" : [
     {
-      "id" : int
-      "amount" : str (дробное число типа 189945,56)
-      "comment" : ?str
-      "type" : str (expenses - расходы; income - доходы)
-      "date" : str (timestamp) 
+      "id" : int,
+      "amount" : str, (дробное число типа 189945,56)
+      "comment" : ?str,
+      "type" : str, (expenses - расходы; income - доходы)
+      "date" : str, <timestamp>
       "category" : [
         {
           "id" : int,
-          "name" : str       
+          "name" : str      
         },
         {
           … n …	
@@ -378,13 +426,23 @@ Response:
   ]
 } 
 ```
+Response code:
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
-### Примеры API запросов и Тесты <a name="example"></a>
+### Примеры API запросов и Тесты <a name="examples"></a>
+Для тестирования сервиса, используем утилиту [Postman](https://www.postman.com/).  
+Для утилиты прилагается файл [HomeDesk Solutions - API Test Collection.postman_collection](https://github.com/MB6718/HomeDesk-Solutions/blob/dev/tests/HomeDesk%20Solutions%20-%20API%20Test%20Collection.postman_collection.json) с коллекцией тестов (см. директорию tests/)  
+Так же для выполнения тестов потребуется тестовая (проинициализированная, заполненная тестовыми данными) БД.
+Для создания тестовой базы предназначен скрипт `create_test_db.py` (см. директорию `tests/`), выполнив который, получим файл БД `test-db.sqlite`.  
 
-Для тестирования используем программу [Postman](https://www.postman.com/),
-к которой прилагается файл [HomeDesk Solutions - API Test Collection.postman_collection](https://github.com/MB6718/HomeDesk-Solutions/blob/dev/tests/HomeDesk%20Solutions%20-%20API%20Test%20Collection.postman_collection.json)
-(см. директорию tests/) с коллекцией тестов.
+Краткая инструкция по тестированию:
+* Запустить скрипт `create_test_db.py` и сгенерировать тестовую БД
+* В файле .env в переменной `DB_FILE` указать путь к тестовой БД (пример: `DB_FILE=tests/test-db.sqlite`)
+* Запустить/перезапустить локальный Flask сервер
+* Запустить утилиту Postman и импортировать в неё коллекцию тестов из папки `tests/`
+* В утилите, протестировать каждый отдельно взятый случай или все в порядке их очереди (в авто режиме)
+
+__Примечание!__ Если пробовать тестировать на чистой БД, будут ошибки в тестах, это нормально и происходит из за отсутствия первичных данных в ней.
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
 ### Построен с использованием <a name="build_with"></a>
