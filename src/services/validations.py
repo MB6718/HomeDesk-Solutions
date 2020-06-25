@@ -1,11 +1,10 @@
 from marshmallow import (
     Schema,
-    fields
+    fields,
 )
 
-
 class UsersSchema(Schema):
-    email = fields.Email()
-    password = fields.Str()
-    first_name = fields.Str()
-    last_name = fields.Str()
+    email = fields.Email(required=True)
+    password = fields.Str(required=True)
+    first_name = fields.Str(required=True)
+    last_name = fields.Str(required=True)
