@@ -7,6 +7,8 @@ from flask import (
 )
 from flask.views import MethodView
 
+from marshmallow import ValidationError
+
 from auth import (
 	must_be_owner,
 	auth_required,
@@ -18,6 +20,8 @@ from services.transactions import (
 	CategoryDoesNotOwnerError,
 )
 
+from services.validations import TransactionSchema
+
 bp = Blueprint('transactions', __name__)
 
 class TransactionView(MethodView):
@@ -26,11 +30,17 @@ class TransactionView(MethodView):
 	def post(self, account_id):
 		""" Обработка добавления новой транзакции в БД """
 		transaction = request.json
-		type = transaction.get('type')
-		amount = transaction.get('amount')
-		date = transaction.get('date')
-		category_id = transaction.get('category_id')
-		comment = transaction.get('comment')
+
+		try:
+			transaction_data = TransactionSchema().load(transaction)
+		except ValidationError as err:
+			return err.messages, 400
+
+		type = transaction_data.get('type')
+		amount = transaction_data.get('amount')
+		date = transaction_data.get('date')
+		category_id = transaction_data.get('category_id')
+		comment = transaction_data.get('comment')
 		
 		if not type or not amount:
 			return '', 400
@@ -46,7 +56,7 @@ class TransactionView(MethodView):
 		with db.connection as con:
 			service = TransactionsService(con)
 			try:
-				transaction = service.add_transaction(transaction)
+				transaction = service.create_transaction(transaction)
 			except CategoryDoesNotExistError:
 				return '', 404
 			except CategoryDoesNotOwnerError:
@@ -74,7 +84,7 @@ class TransactionIDView(MethodView):
 		with db.connection as con:
 			service = TransactionsService(con)
 			try:
-				transaction = service.patch_transaction(
+				transaction = service.update_transaction(
 					transaction,
 					transaction_id
 				)
@@ -90,7 +100,7 @@ class TransactionIDView(MethodView):
 		""" Обработка удаления транзакции из БД """
 		with db.connection as con:
 			service = TransactionsService(con)
-			service.del_transaction(transaction_id)
+			service.delete_transaction(transaction_id)
 		return '', 204
 
 

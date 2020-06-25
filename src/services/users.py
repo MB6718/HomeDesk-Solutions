@@ -23,7 +23,7 @@ class UsersService:
         except sqlite3.IntegrityError:
             raise ConflictError
         return self.get_user(user['email'])
-
+    
     def get_user(self, email):
         cur = self.connection.execute("""
             SELECT id, first_name, last_name, email
