@@ -15,7 +15,6 @@ class UsersSchema(Schema):
     last_name = fields.Str()
 
 class TypeClass(fields.Field):
-
     def _deserialize(self, value, attr, data, **kwargs):
         try:
             name = {
@@ -27,11 +26,11 @@ class TypeClass(fields.Field):
             else:
                 raise ValidationError
         except:
-             raise ValidationError('Тип должен быть или expenses - расходы, или income - доходы')
+             raise ValidationError('Type must be or expenses or income')
 
 class TransactionSchema(Schema):
     type = TypeClass()
     amount = fields.Float()
     comment = fields.Str()
-    date = fields.TimeDelta()
+    date = fields.Int()
     category_id = fields.Int()
