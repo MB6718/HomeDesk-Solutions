@@ -7,8 +7,6 @@ from flask import (
 from flask.views import MethodView
 from marshmallow import ValidationError
 
-from marshmallow import ValidationError
-
 from auth import (
     must_be_owner,
     auth_required,
@@ -19,13 +17,11 @@ from exceptions import (
     PermissionError,
 )
 from services.transactions import TransactionsService
-from services.validations import (
+from validations import (
     CreateTransactionsSchema,
     EditTransactionsSchema,
 )
-    
 
-from services.validations import TransactionSchema
 
 bp = Blueprint('transactions', __name__)
 

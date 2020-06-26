@@ -1,6 +1,6 @@
 from exceptions import (
     PermissionError,
-    ConflictError,
+    CategoryConflictError,
     CategoryDoesNotExistError,
 )
 
@@ -38,7 +38,7 @@ class CategoriesService:
         )
         parent_category = cur.fetchone()
         if parent_id == category_id:
-            raise ConflictError(parent_category)
+            raise CategoryConflictError(parent_category)
         if parent_category is None:
             raise CategoryDoesNotExistError
         cur.execute("""
@@ -90,7 +90,7 @@ class CategoriesService:
         category = cur.fetchone()
         
         if category is not None:
-            raise ConflictError(category)
+            raise CategoryConflictError(category)
         return query
     
     def create_category(self, category, account_id):
