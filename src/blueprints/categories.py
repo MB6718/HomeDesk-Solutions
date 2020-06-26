@@ -1,23 +1,20 @@
 from flask import (
     Blueprint,
     request,
-    jsonify
+    jsonify,
 )
-
 from flask.views import MethodView
-
-from database import db
 
 from auth import (
     must_be_owner,
-    auth_required
+    auth_required,
 )
-
-from services.categories import (
-    CategoriesService,
-    CategoryDoesNotExistError,
-    ConflictError,
+from database import db
+from services.categories import CategoriesService
+from exceptions import (
     PermissionError,
+    ConflictError,
+    CategoryDoesNotExistError,
 )
 
 bp = Blueprint('categories', __name__)
@@ -25,7 +22,6 @@ bp = Blueprint('categories', __name__)
 
 class CategoriesView(MethodView):
     
-
     @auth_required
     def get(self, account_id):
         """Возвращает деревья категорий, принадлежащих пользотелю"""
@@ -38,7 +34,6 @@ class CategoriesView(MethodView):
                 """,
                 (account_id,)
             )
-
             parent_category = [dict(elem) for elem in cur.fetchall()]
             if parent_category:
                 for i in range(len(parent_category)):
@@ -49,7 +44,6 @@ class CategoriesView(MethodView):
                     )
         return jsonify(parent_category), 200
     
-
     @auth_required
     def post(self, account_id):
         """Функция добавления категории"""
@@ -71,8 +65,8 @@ class CategoriesView(MethodView):
             else:
                 return jsonify(category), 200
 
-
 class CategoryIDView(MethodView):
+    
     @auth_required
     @must_be_owner('category')
     def get(self, account_id, category_id):
@@ -95,7 +89,6 @@ class CategoryIDView(MethodView):
             )
             return jsonify(tree_category), 200
     
-
     @auth_required
     @must_be_owner('category')
     def patch(self, account_id, category_id):
