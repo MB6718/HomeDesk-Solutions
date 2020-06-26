@@ -92,7 +92,7 @@
 							"script": {
 								"id": "b7e46c75-6416-46d8-94b6-5ad70fc86709",
 								"exec": [
-									"pm.test(\"Успешная обработка ошибки - Такой логин уже используется\", function () {\r",
+									"pm.test(\"Обработка ошибки - Такой логин уже используется\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(409);\r",
 									"});"
 								],
@@ -106,6 +106,50 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"first_name\" : \"{{first_name}}\",\r\n    \"last_name\" :  \"{{last_name}}\",\r\n    \"email\" : \"{{email}}\",\r\n    \"password\" : \"{{basic_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/users",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Регистрация (неверные поля запроса)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0394692e-b387-484e-a5c0-6131e8503d0b",
+								"exec": [
+									"pm.test(\"Обработка ошибки - Неверные поля JSON запроса\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"first_name\" : \"{{first_name}}\",\r\n    \"last_mame\" :  \"{{last_name}}\",\r\n    \"email\" : \"brbrbr@br@.com\",\r\n    \"pasrwod\" : \"{{basic_password}}\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -260,6 +304,51 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n\t\"email\" : \"{{email}}\",\r\n\t\"password\" : \"5g465g46fd6\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/auth/login",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Аутентификация (Неверные поля запроса)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b05cf392-fc4c-45ca-bb7c-2302b75531e9",
+								"exec": [
+									"pm.test(\"Обработка ошибки - Неверные поля JSON запроса\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"email\" : \"example@mail@.com\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1084,7 +1173,187 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}},\r\n  \"category_id\" : 1\r\n}",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}},\r\n  \"category_id\" : {{category_id}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transactions",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание операции (неверное тело запроса)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9d645cd7-9d22-4e3a-b31d-858509872214",
+								"exec": [
+									"pm.test(\"Операция создана\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5b38302d-9096-4840-9599-59b2efeb5d33",
+								"exec": [
+									"const array_transaction_type = [\"income\", \"expenses\"];\r",
+									"pm.collectionVariables.set(\r",
+									"    \"transaction_type\",\r",
+									"    array_transaction_type[_.random(array_transaction_type.length-1)]\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"a1b2c3\",\r\n  \"amount\" : \"many\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transactions",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание операции (без указания категории)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1e8829a8-3041-4519-8a2e-dd01ddf70966",
+								"exec": [
+									"pm.test(\"Операция создана\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.collectionVariables.set(\"transaction_id\", jsonData.id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4c675feb-a936-486f-8ed3-07c511b58a8a",
+								"exec": [
+									"const array_transaction_type = [\"income\", \"expenses\"];\r",
+									"pm.collectionVariables.set(\r",
+									"    \"transaction_type\",\r",
+									"    array_transaction_type[_.random(array_transaction_type.length-1)]\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transactions",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание операции (с ID 0 категорией)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "65999423-16f3-46b0-9bf7-a98d7d3e6957",
+								"exec": [
+									"pm.test(\"Операция создана\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.collectionVariables.set(\"transaction_id\", jsonData.id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c6e19767-6509-40e5-8f49-7e143ea7854d",
+								"exec": [
+									"const array_transaction_type = [\"income\", \"expenses\"];\r",
+									"pm.collectionVariables.set(\r",
+									"    \"transaction_type\",\r",
+									"    array_transaction_type[_.random(array_transaction_type.length-1)]\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}},\r\n  \"category_id\" : 0\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1329,6 +1598,20 @@
 								],
 								"type": "text/javascript"
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "52a902e0-8dff-485f-9762-4864fa978464",
+								"exec": [
+									"const array_transaction_type = [\"income\", \"expenses\"];\r",
+									"pm.collectionVariables.set(\r",
+									"    \"transaction_type\",\r",
+									"    array_transaction_type[_.random(array_transaction_type.length-1)]\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -1351,6 +1634,165 @@
 							"path": [
 								"transactions",
 								"{{transaction_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение операции по ID (некоторые поля)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b319f46f-20aa-4e1e-8e91-d05bd0214ec9",
+								"exec": [
+									"pm.test(\"Изменение операции по ID\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "6103ead9-2c42-40fc-bb6c-5d42213d8dec",
+								"exec": [
+									"const array_transaction_type = [\"income\", \"expenses\"];\r",
+									"pm.collectionVariables.set(\r",
+									"    \"transaction_type\",\r",
+									"    array_transaction_type[_.random(array_transaction_type.length-1)]\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transactions/{{transaction_id}}",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions",
+								"{{transaction_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение операции по ID (категория ID 0)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b569a8da-9e8f-4e71-822e-28ebfe407795",
+								"exec": [
+									"pm.test(\"Изменение операции по ID\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "22ffb542-ff12-420b-ad3e-e00e88541896",
+								"exec": [
+									"const array_transaction_type = [\"income\", \"expenses\"];\r",
+									"pm.collectionVariables.set(\r",
+									"    \"transaction_type\",\r",
+									"    array_transaction_type[_.random(array_transaction_type.length-1)]\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}},\r\n  \"category_id\" : 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transactions/{{transaction_id}}",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions",
+								"{{transaction_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение операции по ID (ID не существует)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0747d3ba-f062-4499-94e1-8bb7952e0db5",
+								"exec": [
+									"pm.test(\"Изменение операции по ID\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(404);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transactions/1001",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions",
+								"1001"
 							]
 						}
 					},
@@ -1433,47 +1875,6 @@
 							"path": [
 								"transactions",
 								"{{transaction_id}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Изменение операции по ID (ID не существует)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "0747d3ba-f062-4499-94e1-8bb7952e0db5",
-								"exec": [
-									"pm.test(\"Изменение операции по ID\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(404);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{localhost}}/transactions/1001",
-							"host": [
-								"{{localhost}}"
-							],
-							"path": [
-								"transactions",
-								"1001"
 							]
 						}
 					},
@@ -1750,58 +2151,49 @@
 	],
 	"variable": [
 		{
-			"id": "f75cb0f3-0281-4150-b4b3-f58025c3b92c",
+			"id": "093e5c81-73ae-4d73-b93c-c083169edc7d",
 			"key": "localhost",
-			"value": "127.0.0.1:5000",
-			"type": "string"
+			"value": "127.0.0.1:5000"
 		},
 		{
-			"id": "fc3d2eba-3db9-41e2-9d19-8fce84e55f28",
+			"id": "3056bfaa-9f68-4f36-9693-b65db92fb61c",
 			"key": "basic_password",
-			"value": "12345",
-			"type": "string"
+			"value": "12345"
 		},
 		{
-			"id": "0621065b-f4a2-4c65-a3ab-4edb36b9bcd7",
+			"id": "504a989d-84a2-4e53-a505-f55e6b7abc94",
 			"key": "email",
-			"value": "user_one@hds.com",
-			"type": "string"
+			"value": "user_one@hds.com"
 		},
 		{
-			"id": "e6d0dfc6-ed98-4f4e-9a48-f20584b53bda",
+			"id": "ad3e98c6-f3be-46dc-aca9-46a7b11b62a7",
 			"key": "first_name",
-			"value": "Vasili",
-			"type": "string"
+			"value": "Vasili"
 		},
 		{
-			"id": "33203a4b-7472-4a80-9eeb-7c7f530a5cd6",
+			"id": "fa427c8d-afae-404b-a012-3b6033b78eb2",
 			"key": "last_name",
-			"value": "Petrov",
-			"type": "string"
+			"value": "Petrov"
 		},
 		{
-			"id": "c35d5040-d618-4d34-a4ff-5f3c674c4f14",
+			"id": "a7535436-bd2d-4a0f-8fac-6fa77ae6d1ef",
 			"key": "account_id",
-			"value": "1",
-			"type": "string"
+			"value": "1"
 		},
 		{
-			"id": "3d39ae72-e40d-489e-9652-a81bfe083dbc",
+			"id": "4ee71dc5-c1be-4919-95d6-9b1d9dd504f9",
 			"key": "transaction_type",
-			"value": "income",
-			"type": "string"
+			"value": "income"
 		},
 		{
-			"id": "9835a82a-4adf-451c-9263-a1512346046e",
+			"id": "c3998350-cd36-40a4-b439-2ad6dcd62a48",
 			"key": "transaction_id",
-			"value": "1",
-			"type": "string"
+			"value": "1"
 		},
 		{
-			"id": "77925912-41c0-4921-8cbf-a53427f88757",
+			"id": "524f2022-e1e1-44e3-9790-f55c773922aa",
 			"key": "category_id",
-			"value": "1",
-			"type": "string"
+			"value": "1"
 		}
 	],
 	"protocolProfileBehavior": {}
