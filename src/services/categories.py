@@ -1,23 +1,8 @@
-from exceptions import ServiceError
-
-
-class CategoriesServiceError(ServiceError):
-    service = 'categories'
-
-
-class CategoryDoesNotExistError(CategoriesServiceError):
-    pass
-
-
-class PermissionError(CategoriesServiceError):
-    pass
-
-
-class ConflictError(CategoriesServiceError):
-    def __init__(self, category):
-        CategoriesServiceError.__init__(self)
-        self.category = category
-
+from exceptions import (
+    PermissionError,
+    ConflictError,
+    CategoryDoesNotExistError,
+)
 
 class CategoriesService:
     def __init__(self, connection):
@@ -56,7 +41,7 @@ class CategoriesService:
             raise ConflictError(parent_category)
         if parent_category is None:
             raise CategoryDoesNotExistError
-        cur.execute(f"""
+        cur.execute("""
             SELECT c.account_id
             FROM categories AS c
             WHERE c.id = ?
@@ -68,7 +53,33 @@ class CategoriesService:
             raise PermissionError
         return parent_category
     
-    def category_exists(self, account_id, name_category):
+    def is_category_owner(self, category_id, account_id):
+        cur = self.connection.cursor()
+        cur.execute("""
+            SELECT c.account_id
+            FROM categories AS c
+            WHERE c.id = ?
+            """,
+            (category_id,)
+        )
+        category = dict(cur.fetchone())
+        if category['account_id'] is not account_id:
+            raise PermissionError
+    
+    def category_exists(self, category_id):
+        cur = self.connection.cursor()
+        cur.execute("""
+            SELECT *
+            FROM categories AS c
+            WHERE c.id = ?
+            """,
+            (category_id,)
+        )
+        category = cur.fetchone()
+        if category is None:
+            raise CategoryDoesNotExistError
+    
+    def category_check(self, account_id, name_category):
         cur = self.connection.cursor()
         query = (
             'SELECT c.name, c.id '
@@ -87,7 +98,7 @@ class CategoriesService:
         cur = self.connection.cursor()
         name_category = category.get('name')
         parent_id = category.get('parent_id')
-        query = self.category_exists(account_id, name_category)
+        query = self.category_check(account_id, name_category)
         if parent_id:
             parent_category = self.parent_category_exists(parent_id, account_id)
         
@@ -137,7 +148,7 @@ class CategoriesService:
         for key, value in request_json.items():
             if key == 'name':
                 name = request_json.get('name')
-                self.category_exists(account_id, name)
+                self.category_check(account_id, name)
             cur.execute(f"""
                 UPDATE categories
                 SET {key} = '{value}'
