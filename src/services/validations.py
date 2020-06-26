@@ -1,18 +1,13 @@
 from marshmallow import (
     Schema,
     fields,
-    ValidationError,
 )
 
-class AuthSchema(Schema):
+class UsersSchema(Schema):
     email = fields.Email(required=True)
     password = fields.Str(required=True)
-
-class UsersSchema(Schema):
-    email = fields.Email()
-    password = fields.Str()
-    first_name = fields.Str()
-    last_name = fields.Str()
+    first_name = fields.Str(required=True)
+    last_name = fields.Str(required=True)
 
 class TypeClass(fields.Field):
     def _deserialize(self, value, attr, data, **kwargs):

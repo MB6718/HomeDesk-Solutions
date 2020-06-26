@@ -4,6 +4,5 @@ class ServiceError(Exception):
     def __init__(self, *args):
         super().__init__(self.service, *args)
 
-        
-class PermissionError(ServiceError):
+class ConflictError(Exception):
     pass
