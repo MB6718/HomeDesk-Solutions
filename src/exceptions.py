@@ -7,10 +7,13 @@ class ServiceError(Exception):
 # class CategoriesServiceError(ServiceError):
     # service = 'categories'
 
-class ConflictError(ServiceError):
+class CategoryConflictError(ServiceError):
     def __init__(self, category):
         ServiceError.__init__(self)
         self.category = category
+
+class ConflictError(ServiceError):
+    pass
 
 class CategoryDoesNotExistError(ServiceError):
     pass

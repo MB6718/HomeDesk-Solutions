@@ -13,7 +13,7 @@ from database import db
 from services.categories import CategoriesService
 from exceptions import (
     PermissionError,
-    ConflictError,
+    CategoryConflictError,
     CategoryDoesNotExistError,
 )
 
@@ -60,7 +60,7 @@ class CategoriesView(MethodView):
                 return '', 400
             except PermissionError:
                 return '', 403
-            except ConflictError as e:
+            except CategoryConflictError as e:
                 return jsonify(dict(e.category)), 409
             else:
                 return jsonify(category), 200
@@ -100,7 +100,7 @@ class CategoryIDView(MethodView):
                 category = service.update_category(request_json, category_id, account_id)
             except CategoryDoesNotExistError:
                 return '', 400
-            except ConflictError as e:
+            except CategoryConflictError as e:
                 return jsonify(dict(e.category)), 409
             except PermissionError:
                 return '', 403

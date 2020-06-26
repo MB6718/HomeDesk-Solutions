@@ -8,7 +8,7 @@ from marshmallow import ValidationError
 
 from database import db
 from exceptions import PermissionError
-from services.validations import AuthSchema
+from validations import AuthSchema
 from services.auth import AuthService
 
 bp = Blueprint('auth', __name__)
