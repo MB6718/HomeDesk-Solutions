@@ -7,6 +7,8 @@ from flask import (
 from flask.views import MethodView
 from marshmallow import ValidationError
 
+from marshmallow import ValidationError
+
 from auth import (
     must_be_owner,
     auth_required,
@@ -23,10 +25,12 @@ from services.validations import (
 )
     
 
+from services.validations import TransactionSchema
+
 bp = Blueprint('transactions', __name__)
 
 class TransactionView(MethodView):
-    
+      
     @auth_required
     def post(self, account_id):
         """ Обработка добавления новой транзакции в БД """
@@ -100,7 +104,6 @@ class TransactionIDView(MethodView):
             service = TransactionsService(con)
             service.delete_transaction(transaction_id)
         return '', 204
-
 
 bp.add_url_rule('', view_func=TransactionView.as_view('transaction'))
 bp.add_url_rule(

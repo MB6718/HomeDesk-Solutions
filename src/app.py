@@ -8,6 +8,7 @@ from blueprints.report import bp as report_bp
 
 from database import db
 
+
 def create_app():
 	app = Flask(__name__)
 	app.config.from_object('config.Config')
