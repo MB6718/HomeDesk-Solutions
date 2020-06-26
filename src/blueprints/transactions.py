@@ -78,7 +78,12 @@ class TransactionIDView(MethodView):
 	@must_be_owner('transaction')
 	def patch(self, transaction_id, account_id):
 		""" Обработка изменения транзакции в БД """
-		transaction = dict(request.json)
+		try:
+			transaction_data = TransactionSchema().load(request.json)
+		except ValidationError as err:
+			return err.messages, 400
+
+		transaction = dict(transaction_data)
 		transaction['account_id'] = account_id
 		
 		with db.connection as con:
