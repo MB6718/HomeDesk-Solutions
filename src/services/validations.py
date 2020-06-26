@@ -4,12 +4,15 @@ from marshmallow import (
     ValidationError,
 )
 
-
-class UsersSchema(Schema):
+class AuthSchema(Schema):
     email = fields.Email(required=True)
     password = fields.Str(required=True)
-    first_name = fields.Str(required=True)
-    last_name = fields.Str(required=True)
+
+class UsersSchema(Schema):
+    email = fields.Email()
+    password = fields.Str()
+    first_name = fields.Str()
+    last_name = fields.Str()
 
 class TypeClass(fields.Field):
     def _deserialize(self, value, attr, data, **kwargs):
@@ -25,14 +28,7 @@ class TypeClass(fields.Field):
         except:
              raise ValidationError('Type must be or expenses or income')
 
-class CreateTransactionsSchema(Schema):
-    type = TypeClass(required=True, load_only=True)
-    amount = fields.Float(required=True, load_only=True)
-    comment = fields.Str()
-    date = fields.Int()
-    category_id = fields.Int()
-
-class EditTransactionsSchema(Schema):
+class TransactionSchema(Schema):
     type = TypeClass()
     amount = fields.Float()
     comment = fields.Str()
