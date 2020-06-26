@@ -4,7 +4,6 @@ from exceptions import (
     CategoryDoesNotExistError,
 )
 
-
 class CategoriesService:
     def __init__(self, connection):
         self.connection = connection

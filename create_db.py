@@ -7,11 +7,11 @@ with sqlite3.connect('db.sqlite') as connection:
     cursor.executescript("""
         PRAGMA foreign_keys = ON;
         CREATE TABLE IF NOT EXISTS accounts (
-        id 		    INTEGER PRIMARY KEY AUTOINCREMENT,
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
         first_name  TEXT    NOT NULL,
-        last_name 	TEXT    NOT NULL,
-        email 		TEXT    NOT NULL UNIQUE,
-        password 	TEXT    NOT NULL
+        last_name   TEXT    NOT NULL,
+        email       TEXT    NOT NULL UNIQUE,
+        password    TEXT    NOT NULL
         );
 
         CREATE TABLE categories (
@@ -19,7 +19,7 @@ with sqlite3.connect('db.sqlite') as connection:
         parent_id   INTEGER NULL,
         account_id  INTEGER NOT NULL,
         name        TEXT    NOT NULL,
-        FOREIGN KEY (account_id) REFERENCES account(id) ON DELETE CASCADE
+        FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE
         );
         
         CREATE TABLE transactions (
@@ -30,6 +30,10 @@ with sqlite3.connect('db.sqlite') as connection:
         comment       TEXT         NULL,
         category_id   INTEGER      NULL,
         account_id    INTEGER      NOT NULL,
-        FOREIGN KEY (account_id) REFERENCES account(id) ON DELETE CASCADE
+        FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+        CONSTRAINT fk_categories
+            FOREIGN KEY (category_id)
+            REFERENCES categories(id)
+            ON DELETE SET NULL
         )
     """)

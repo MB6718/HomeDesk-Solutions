@@ -21,7 +21,7 @@ bp = Blueprint('categories', __name__)
 
 
 class CategoriesView(MethodView):
-
+    
     @auth_required
     def get(self, account_id):
         """Возвращает деревья категорий, принадлежащих пользотелю"""
@@ -34,7 +34,6 @@ class CategoriesView(MethodView):
                 """,
                 (account_id,)
             )
-    
             parent_category = [dict(elem) for elem in cur.fetchall()]
             if parent_category:
                 for i in range(len(parent_category)):
@@ -67,6 +66,7 @@ class CategoriesView(MethodView):
                 return jsonify(category), 200
 
 class CategoryIDView(MethodView):
+    
     @auth_required
     @must_be_owner('category')
     def get(self, account_id, category_id):
