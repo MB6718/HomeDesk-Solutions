@@ -19,8 +19,10 @@ def report():
     select = 'SELECT * FROM transactions '
     select_sum = 'SELECT SUM(amount) FROM transactions '
     select_item_count = 'SELECT COUNT(id) FROM transactions '
-    where = 'WHERE '
+    where = 'WHERE account_id = ? AND'
     params = list()
+    
+    params.append(session.get('account_id'))
     request_dict = dict(request.args)
 
     if 'from' in request_dict:
@@ -45,9 +47,6 @@ def report():
         page = request_dict['page']
     else:
         page = 1
-
-    if where == 'WHERE ':
-        where = ''
 
     with db.connection as con:
         cur = con.execute(select+where, tuple(params))
