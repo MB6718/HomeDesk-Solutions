@@ -24,7 +24,7 @@ class CategoriesView(MethodView):
     
     @auth_required
     def get(self, account_id):
-        """Возвращает деревья категорий, принадлежащих пользотелю"""
+        """Возвращает деревья категорий, принадлежащих пользователю"""
         with db.connection as con:
             service = CategoriesService(con)
             cur = con.execute("""
@@ -60,8 +60,8 @@ class CategoriesView(MethodView):
                 return '', 400
             except PermissionError:
                 return '', 403
-            except CategoryConflictError as e:
-                return jsonify(dict(e.category)), 409
+            except CategoryConflictError as error:
+                return jsonify(dict(error.category)), 409
             else:
                 return jsonify(category), 200
 
@@ -92,16 +92,19 @@ class CategoryIDView(MethodView):
     @auth_required
     @must_be_owner('category')
     def patch(self, account_id, category_id):
-        """Функция для внесений изменений в категорию"""
-        request_json = request.json
+        """Функция для весенний изменений в категорию"""
         with db.connection as con:
             service = CategoriesService(con)
             try:
-                category = service.update_category(request_json, category_id, account_id)
+                category = service.update_category(
+                    dict(request.json),
+                    category_id,
+                    account_id
+                )
             except CategoryDoesNotExistError:
                 return '', 400
-            except CategoryConflictError as e:
-                return jsonify(dict(e.category)), 409
+            except CategoryConflictError as error:
+                return jsonify(dict(error.category)), 409
             except PermissionError:
                 return '', 403
             else:
@@ -110,7 +113,7 @@ class CategoryIDView(MethodView):
     @auth_required
     @must_be_owner('category')
     def delete(self, account_id, category_id):
-        """Функция для удаления категории и всех ёё потомков"""
+        """Функция для удаления категории и всех её потомков"""
         with db.connection as con:
             service = CategoriesService(con)
             service.delete_category(category_id)

@@ -19,8 +19,8 @@ def users():
     """ Обработка регистрации нового пользователя """
     try:
         user_data = UsersSchema().load(request.json)
-    except ValidationError as err:
-        return err.messages, 400
+    except ValidationError as error:
+        return error.messages, 400
     else:
         with db.connection as con:
             service = UsersService(con)

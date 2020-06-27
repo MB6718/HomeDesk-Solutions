@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash
 
 from exceptions import ConflictError
 
+
 class UsersService:
     def __init__(self, connection):
         self.connection = connection

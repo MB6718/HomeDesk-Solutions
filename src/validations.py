@@ -4,6 +4,7 @@ from marshmallow import (
     ValidationError,
 )
 
+
 class AuthSchema(Schema):
     email = fields.Email(required=True)
     password = fields.Str(required=True)
