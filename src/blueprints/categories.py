@@ -30,22 +30,9 @@ class CategoriesView(MethodView):
         """Возвращает деревья категорий, принадлежащих пользователю"""
         with db.connection as con:
             service = CategoriesService(con)
-            cur = con.execute("""
-                SELECT id, name
-                FROM categories
-                WHERE account_id = ? and parent_id is NULL
-                """,
-                (account_id,)
-            )
-            parent_category = [dict(elem) for elem in cur.fetchall()]
-            if parent_category:
-                for i in range(len(parent_category)):
-                    parent_category[i] = service.get_subcategories_tree(
-                        con,
-                        account_id,
-                        parent_category[i]
-                    )
-        return jsonify(parent_category), 200
+            tree_categories = service.get_subcategories_tree(account_id)
+
+        return jsonify(tree_categories), 200
     
     @auth_required
     def post(self, account_id):
@@ -74,21 +61,8 @@ class CategoryIDView(MethodView):
     def get(self, account_id, category_id):
         """Возвращает дерево категорий, начиная с category_id категории"""
         with db.connection as con:
-            cur = con.execute("""
-                SELECT id, name
-                FROM categories
-                WHERE account_id = ? and id = ?
-                """,
-                (account_id, category_id,)
-            )
-            parent_category = cur.fetchone()
             service = CategoriesService(con)
-
-            tree_category = service.get_subcategories_tree(
-                con,
-                account_id,
-                dict(parent_category)
-            )
+            tree_category = service.get_subcategories_tree(account_id, category_id)
             return jsonify(tree_category), 200
     
     @auth_required
