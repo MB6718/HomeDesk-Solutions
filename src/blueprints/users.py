@@ -5,11 +5,10 @@ from flask import (
 )
 import sqlite3
 from marshmallow import ValidationError
-from werkzeug.security import generate_password_hash
 
 from database import db
 from exceptions import ConflictError
-from services.validations import UsersSchema
+from validations import UsersSchema
 from services.users import UsersService
 
 bp = Blueprint('users', __name__)

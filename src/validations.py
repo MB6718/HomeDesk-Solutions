@@ -1,8 +1,12 @@
 from marshmallow import (
     Schema,
     fields,
-    ValidationError
+    ValidationError,
 )
+
+class AuthSchema(Schema):
+    email = fields.Email(required=True)
+    password = fields.Str(required=True)
 
 class UsersSchema(Schema):
     email = fields.Email(required=True)
@@ -24,7 +28,14 @@ class TypeClass(fields.Field):
         except:
              raise ValidationError('Type must be or expenses or income')
 
-class TransactionSchema(Schema):
+class CreateTransactionsSchema(Schema):
+    type = TypeClass(required=True, load_only=True)
+    amount = fields.Float(required=True, load_only=True)
+    comment = fields.Str()
+    date = fields.Int()
+    category_id = fields.Int()
+
+class EditTransactionsSchema(Schema):
     type = TypeClass()
     amount = fields.Float()
     comment = fields.Str()
