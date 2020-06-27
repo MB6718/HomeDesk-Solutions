@@ -2,6 +2,7 @@ from werkzeug.security import check_password_hash
 
 from exceptions import PermissionError
 
+
 class AuthService:
     def __init__(self, connection):
         self.connection = connection
