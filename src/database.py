@@ -1,5 +1,6 @@
 import sqlite3
 
+
 class SqliteDB():
     def __init__(self, app=None):
         self._connection = None
@@ -19,7 +20,7 @@ class SqliteDB():
         connection_string = self._app.config['DB_FILE']
         self._connection = sqlite3.connect(
             connection_string,
-            detect_types = sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES,
+            detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES,
         )
         self._connection.row_factory = sqlite3.Row
     
@@ -27,5 +28,6 @@ class SqliteDB():
         if self._connection is not None:
             self._connection.close()
             self._connection = None
+
 
 db = SqliteDB()
