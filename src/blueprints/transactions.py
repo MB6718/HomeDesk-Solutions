@@ -17,7 +17,10 @@ from exceptions import (
     PermissionError,
 )
 from services.transactions import TransactionsService
-
+from validations import (
+    CreateTransactionsSchema,
+    EditTransactionsSchema,
+)
 
 bp = Blueprint('transactions', __name__)
 
@@ -27,7 +30,7 @@ class TransactionView(MethodView):
     def post(self, account_id):
         """ Обработка добавления новой транзакции в БД """
         try:
-            transaction_data = TransactionSchema().load(request.json)
+            transaction_data = CreateTransactionsSchema().load(request.json)
         except ValidationError as error:
             return jsonify(error.messages), 400
         else:
@@ -67,7 +70,7 @@ class TransactionIDView(MethodView):
     def patch(self, transaction_id, account_id):
         """ Обработка изменения транзакции в БД """
         try:
-            transaction_data = TransactionSchema().load(request.json)
+            transaction_data = EditTransactionsSchema().load(request.json)
         except ValidationError as err:
             return err.messages, 400
 

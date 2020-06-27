@@ -47,7 +47,7 @@ class TransactionsService:
         )
         return dict(cur.fetchone())
     
-    def update_transaction(self, transaction, transaction_id, account_id):
+    def update_transaction(self, transaction, transaction_id):
         """ редактирование транзакции в БД """
         fields = ', '.join(
             f'{name} = "{value}"' for name, value in transaction.items()
@@ -57,7 +57,7 @@ class TransactionsService:
             if category_id is None:
                 fields = fields.replace('"None"', 'NULL')
             else:
-                self.category_check(category_id, account_id)
+                self.category_check(category_id, transaction['account_id'])
         cur = self.connection.execute(f"""
             UPDATE transactions
             SET {fields}
