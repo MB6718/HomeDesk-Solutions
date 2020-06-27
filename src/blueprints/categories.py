@@ -17,6 +17,9 @@ from exceptions import (
     CategoryDoesNotExistError,
 )
 
+from marshmallow import ValidationError
+from validations import CreateCategorySchema
+
 bp = Blueprint('categories', __name__)
 
 
@@ -47,22 +50,21 @@ class CategoriesView(MethodView):
     @auth_required
     def post(self, account_id):
         """Функция добавления категории"""
-        category = request.json
-        name = category.get('name')
-        parent_id = category.get('parent_id')
-        if not name:
-            return '', 400
-        with db.connection as con:
-            service = CategoriesService(con)
-            try:
-                category = service.create_category(category, account_id)
-            except CategoryDoesNotExistError:
-                return '', 400
-            except PermissionError:
-                return '', 403
-            except CategoryConflictError as error:
-                return jsonify(dict(error.category)), 409
-            else:
+        try:
+            category = CreateCategorySchema().load(request.json)
+        except ValidationError as error:
+            return jsonify(error.messages), 400
+        else:
+            with db.connection as con:
+                service = CategoriesService(con)
+                try:
+                    category = service.create_category(category, account_id)
+                except CategoryDoesNotExistError:
+                    return '', 400
+                except PermissionError:
+                    return '', 403
+                except CategoryConflictError as error:
+                    return jsonify(dict(error.category)), 409
                 return jsonify(category), 200
 
 class CategoryIDView(MethodView):

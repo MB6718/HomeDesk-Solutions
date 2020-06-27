@@ -42,3 +42,7 @@ class EditTransactionsSchema(Schema):
     comment = fields.Str()
     date = fields.Int()
     category_id = fields.Int()
+    
+class CreateCategorySchema(Schema):
+    name = fields.Str(required=True)
+    parent_id = fields.Int()

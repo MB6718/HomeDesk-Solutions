@@ -10,6 +10,7 @@ class CategoriesService:
     
     @staticmethod
     def get_subcategories_tree(con, account_id, parent_category):
+        """Получение дерева категорий"""
         cur = con.execute("""
             SELECT id, name
             FROM categories
@@ -29,6 +30,7 @@ class CategoriesService:
         return parent_category
     
     def parent_category_exists(self, parent_id, account_id, category_id=None):
+        """Проверка существования родительской категории"""
         parent_category = self.get_category(parent_id)
         if parent_id == category_id:
             raise CategoryConflictError(parent_category)
@@ -36,9 +38,12 @@ class CategoriesService:
             raise CategoryDoesNotExistError
         if parent_category['account_id'] != account_id:
             raise PermissionError
+        parent_category = dict(parent_category)
+        parent_category.pop('account_id')
         return parent_category
     
     def get_category(self, category_id):
+        """Получение категории по id"""
         cur = self.connection.execute("""
             SELECT id, name, account_id
             FROM categories
@@ -49,16 +54,19 @@ class CategoriesService:
         return cur.fetchone()
     
     def is_category_owner(self, category_id, account_id):
+        """Проверка хозяина категории (для родительской)"""
         category = dict(self.get_category(category_id))
         if category['account_id'] != account_id:
             raise PermissionError
     
     def category_exists(self, category_id):
+        """Проверка существования категории (для родительской)"""
         category = self.get_category(category_id)
         if category is None:
             raise CategoryDoesNotExistError
     
     def category_check(self, account_id, name_category):
+        """Проверка категории на существование по имени"""
         cur = self.connection.cursor()
         query = ("""
             SELECT c.name, c.id
@@ -130,7 +138,13 @@ class CategoriesService:
         )
         if 'name' in request_json:
             self.category_check(account_id, request_json['name'])
-        cur = self.connection.execute(f"""
+        if 'parent_id' in request_json:
+            parent_category = dict(self.parent_category_exists(
+                request_json['parent_id'],
+                account_id,
+                category_id=category_id
+            ))
+        self.connection.execute(f"""
             UPDATE categories
             SET {fields}
             WHERE id = ?
@@ -138,12 +152,11 @@ class CategoriesService:
             (category_id,)
         )
         self.connection.commit()
-        
+        category = dict(self.get_category(category_id))
+        category.pop('account_id')
         if 'parent_id' in request_json:
-            parent_category = dict(self.parent_category_exists(
-                request_json['parent_id'],
-                account_id,
-                category_id=category_id
-            ))
-            parent_category['subcategory'] = dict(self.get_category(category_id))
+            parent_category['subcategory'] = category
             return parent_category
+        else:
+            return category
+        
