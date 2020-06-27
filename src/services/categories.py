@@ -10,6 +10,7 @@ class CategoriesService:
     
     @staticmethod
     def get_subcategories_tree(con, account_id, parent_category):
+        """Получение дерева категорий"""
         cur = con.execute("""
             SELECT id, name
             FROM categories
@@ -29,62 +30,49 @@ class CategoriesService:
         return parent_category
     
     def parent_category_exists(self, parent_id, account_id, category_id=None):
-        cur = self.connection.cursor()
-        cur.execute(
-            'SELECT c.name, c.id '
-            'FROM categories AS c '
-            'WHERE c.id = ?',
-            (parent_id,)
-        )
-        parent_category = cur.fetchone()
+        """Проверка существования родительской категории"""
+        parent_category = self.get_category(parent_id)
         if parent_id == category_id:
             raise CategoryConflictError(parent_category)
         if parent_category is None:
             raise CategoryDoesNotExistError
-        cur.execute("""
-            SELECT c.account_id
-            FROM categories AS c
-            WHERE c.id = ?
-            """,
-            (parent_id,)
-        )
-        result = cur.fetchone()
-        if result['account_id'] != account_id:
+        if parent_category['account_id'] != account_id:
             raise PermissionError
+        parent_category = dict(parent_category)
+        parent_category.pop('account_id')
         return parent_category
     
-    def is_category_owner(self, category_id, account_id):
-        cur = self.connection.cursor()
-        cur.execute("""
-            SELECT c.account_id
-            FROM categories AS c
-            WHERE c.id = ?
+    def get_category(self, category_id):
+        """Получение категории по id"""
+        cur = self.connection.execute("""
+            SELECT id, name, account_id
+            FROM categories
+            WHERE id = ?
             """,
             (category_id,)
         )
-        category = dict(cur.fetchone())
-        if category['account_id'] is not account_id:
+        return cur.fetchone()
+    
+    def is_category_owner(self, category_id, account_id):
+        """Проверка хозяина категории (для родительской)"""
+        category = dict(self.get_category(category_id))
+        if category['account_id'] != account_id:
             raise PermissionError
     
     def category_exists(self, category_id):
-        cur = self.connection.cursor()
-        cur.execute("""
-            SELECT *
-            FROM categories AS c
-            WHERE c.id = ?
-            """,
-            (category_id,)
-        )
-        category = cur.fetchone()
+        """Проверка существования категории (для родительской)"""
+        category = self.get_category(category_id)
         if category is None:
             raise CategoryDoesNotExistError
     
     def category_check(self, account_id, name_category):
+        """Проверка категории на существование по имени"""
         cur = self.connection.cursor()
-        query = (
-            'SELECT c.name, c.id '
-            'FROM categories AS c '
-            'WHERE c.name = ? AND account_id = ?'
+        query = ("""
+            SELECT c.name, c.id
+            FROM categories AS c
+            WHERE c.name = ? AND account_id = ?
+            """
         )
         cur.execute(query, (name_category, account_id,))
         category = cur.fetchone()
@@ -102,9 +90,10 @@ class CategoriesService:
         if parent_id:
             parent_category = self.parent_category_exists(parent_id, account_id)
         
-        cur.execute(
-            'INSERT INTO categories (account_id, parent_id, name) '
-            'VALUES (?, ?, ?) ',
+        cur.execute("""
+            INSERT INTO categories (account_id, parent_id, name)
+            VALUES (?, ?, ?)
+            """,
             (account_id, parent_id, name_category)
         )
         self.connection.commit()
@@ -119,7 +108,8 @@ class CategoriesService:
         return result
     
     def delete_category(self, category_id):
-        """ Удаление категории из БД. При удаление категории родителя удаляются все наследующиеся от него категории-дети"""
+        """ Удаление категории из БД. При удаление категории родителя удаляются
+            все наследующиеся от него категории-дети """
         cur = self.connection.cursor()
         list_id = []
         list_id.append(category_id)
@@ -128,7 +118,8 @@ class CategoriesService:
                 SELECT id
                 FROM categories
                 WHERE parent_id = {id}
-            """)
+                """
+            )
             result = cur.fetchall()
             if result:
                 for elem in result:
@@ -137,35 +128,35 @@ class CategoriesService:
             cur.execute(f"""
                 DELETE FROM categories
                 WHERE id = {id}
-            """)
+                """
+            )
         self.connection.commit()
     
     def update_category(self, request_json, category_id, account_id):
-        cur = self.connection.cursor()
-        parent_id = request_json.get('parent_id')
-        if parent_id:
-            parent_category = self.parent_category_exists(parent_id, account_id, category_id=category_id)
-        for key, value in request_json.items():
-            if key == 'name':
-                name = request_json.get('name')
-                self.category_check(account_id, name)
-            cur.execute(f"""
-                UPDATE categories
-                SET {key} = '{value}'
-                WHERE id= {category_id}
-            """)
-        
-        query = (
-            'SELECT c.name, c.id '
-            'FROM categories AS c '
-            'WHERE id = ? '
+        fields = ', '.join(
+            f'{name} = "{value}"' for name, value in request_json.items()
         )
-        cur.execute(query, (category_id,))
-        result = dict(cur.fetchone())
-        if parent_id:
-            parent_category = dict(parent_category)
-            parent_category['subcategory'] = result
-            result = parent_category
-        
+        if 'name' in request_json:
+            self.category_check(account_id, request_json['name'])
+        if 'parent_id' in request_json:
+            parent_category = dict(self.parent_category_exists(
+                request_json['parent_id'],
+                account_id,
+                category_id=category_id
+            ))
+        self.connection.execute(f"""
+            UPDATE categories
+            SET {fields}
+            WHERE id = ?
+            """,
+            (category_id,)
+        )
         self.connection.commit()
-        return result
+        category = dict(self.get_category(category_id))
+        category.pop('account_id')
+        if 'parent_id' in request_json:
+            parent_category['subcategory'] = category
+            return parent_category
+        else:
+            return category
+        

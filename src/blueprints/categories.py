@@ -17,6 +17,9 @@ from exceptions import (
     CategoryDoesNotExistError,
 )
 
+from marshmallow import ValidationError
+from validations import CreateCategorySchema
+
 bp = Blueprint('categories', __name__)
 
 
@@ -24,7 +27,7 @@ class CategoriesView(MethodView):
     
     @auth_required
     def get(self, account_id):
-        """Возвращает деревья категорий, принадлежащих пользотелю"""
+        """Возвращает деревья категорий, принадлежащих пользователю"""
         with db.connection as con:
             service = CategoriesService(con)
             cur = con.execute("""
@@ -47,22 +50,21 @@ class CategoriesView(MethodView):
     @auth_required
     def post(self, account_id):
         """Функция добавления категории"""
-        category = request.json
-        name = category.get('name')
-        parent_id = category.get('parent_id')
-        if not name:
-            return '', 400
-        with db.connection as con:
-            service = CategoriesService(con)
-            try:
-                category = service.create_category(category, account_id)
-            except CategoryDoesNotExistError:
-                return '', 400
-            except PermissionError:
-                return '', 403
-            except CategoryConflictError as e:
-                return jsonify(dict(e.category)), 409
-            else:
+        try:
+            category = CreateCategorySchema().load(request.json)
+        except ValidationError as error:
+            return jsonify(error.messages), 400
+        else:
+            with db.connection as con:
+                service = CategoriesService(con)
+                try:
+                    category = service.create_category(category, account_id)
+                except CategoryDoesNotExistError:
+                    return '', 400
+                except PermissionError:
+                    return '', 403
+                except CategoryConflictError as error:
+                    return jsonify(dict(error.category)), 409
                 return jsonify(category), 200
 
 class CategoryIDView(MethodView):
@@ -92,16 +94,19 @@ class CategoryIDView(MethodView):
     @auth_required
     @must_be_owner('category')
     def patch(self, account_id, category_id):
-        """Функция для внесений изменений в категорию"""
-        request_json = request.json
+        """Функция для весенний изменений в категорию"""
         with db.connection as con:
             service = CategoriesService(con)
             try:
-                category = service.update_category(request_json, category_id, account_id)
+                category = service.update_category(
+                    dict(request.json),
+                    category_id,
+                    account_id
+                )
             except CategoryDoesNotExistError:
                 return '', 400
-            except CategoryConflictError as e:
-                return jsonify(dict(e.category)), 409
+            except CategoryConflictError as error:
+                return jsonify(dict(error.category)), 409
             except PermissionError:
                 return '', 403
             else:
@@ -110,7 +115,7 @@ class CategoryIDView(MethodView):
     @auth_required
     @must_be_owner('category')
     def delete(self, account_id, category_id):
-        """Функция для удаления категории и всех ёё потомков"""
+        """Функция для удаления категории и всех её потомков"""
         with db.connection as con:
             service = CategoriesService(con)
             service.delete_category(category_id)
