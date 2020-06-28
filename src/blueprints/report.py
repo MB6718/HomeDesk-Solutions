@@ -1,73 +1,38 @@
 from flask import (
     Blueprint,
     request,
-    session,
-    jsonify
+    jsonify,
+    session
 )
+from flask.views import MethodView
 
 from database import db
 
 from auth import auth_required
+from services.report import ReportService
+
+from exceptions import (
+    PermissionError,
+    CategoryDoesNotExistError,
+)
 
 bp = Blueprint('report', __name__)
 
+class ReportView(MethodView):
+    
+    @auth_required
+    def get(self, account_id):
+        """ Обработка получения отчёта """
+        query = dict(request.args)
+        with db.connection as con:
+            service = ReportService(con)
+            try:
+                response = service.get_report(account_id, dict_query=query)
+            except PermissionError:
+                return '', 403
+            except CategoryDoesNotExistError:
+                return '', 400
+        return jsonify(response), 200
 
-@bp.route('', methods=['GET'])
-#@auth_required
-def report():
-    """ Обработка получения отчёта """
-    select = 'SELECT * FROM transactions '
-    select_sum = 'SELECT SUM(amount) FROM transactions '
-    select_item_count = 'SELECT COUNT(id) FROM transactions '
-    where = 'WHERE account_id = ? AND'
-    params = list()
 
-    params.append(session.get('account_id'))
-    request_dict = dict(request.args)
-
-    if 'from' in request_dict:
-        where = f'date>=? AND'
-        params.append(request_dict['from'])
-
-    if 'to' in request_dict:
-        where += f'date<=? AND'
-        params.append(request_dict['to'])
-
-    if 'type' in request_dict:
-        where += f'type = ? AND'
-        params.append(request_dict['type'])
-
-    where = ' '.join(where.split()[:-1])
-    if 'page_size' in request_dict:
-        page_size = request_dict['page_size']
-    else:
-        page_size = 20
-
-    if 'page' in request_dict:
-        page = request_dict['page']
-    else:
-        page = 1
-
-    with db.connection as con:
-        cur = con.execute(select+where, tuple(params))
-        transactions = [dict(elem) for elem in cur.fetchall()]
-
-        cur = con.execute(select_sum+where,tuple(params))
-        total = dict(cur.fetchone())['SUM(amount)']
-
-        cur = con.execute(select_item_count+where, tuple(params))
-        item_count = dict(cur.fetchone())['COUNT(id)']
-
-        if item_count % page_size > 0:
-            page_count = item_count//page_size + 1
-        else:
-            page_count = item_count//page_size
-
-        response = dict()
-        response['page_count'] = page_count
-        response['page'] = page
-        response['page_size'] = page_size
-        response['item_count'] = item_count
-        response['total'] = total
-        response['transactions'] = transactions
-    return jsonify(response), 200
+bp.add_url_rule('', view_func=ReportView.as_view('report'))
