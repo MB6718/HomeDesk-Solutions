@@ -39,6 +39,7 @@ class CategoriesService:
                 INNER JOIN subtree ON categories.parent_id = subtree.id)
             SELECT id, name, parent_id
             FROM subtree
+            ORDER BY id
             """,
         )
         dict_category = [dict(elem) for elem in cur.fetchall()]
@@ -90,12 +91,6 @@ class CategoriesService:
         category = dict(self.get_category(category_id))
         if category['account_id'] != account_id:
             raise PermissionError
-    
-    def category_exists(self, category_id):
-        """Проверка существования категории (для родительской)"""
-        category = self.get_category(category_id)
-        if category is None:
-            raise CategoryDoesNotExistError
     
     def category_check(self, account_id, name_category):
         """Проверка категории на существование по имени"""
