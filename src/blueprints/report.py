@@ -21,7 +21,7 @@ def report():
     select_item_count = 'SELECT COUNT(id) FROM transactions '
     where = 'WHERE account_id = ? AND'
     params = list()
-    
+
     params.append(session.get('account_id'))
     request_dict = dict(request.args)
 
