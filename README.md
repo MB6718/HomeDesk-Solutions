@@ -22,7 +22,7 @@
 	* [POST /categories](#add_category)
 	* [PATCH /categories/&lt;int:category_id&gt;](#edit_category_id)
 	* [DELETE /categories/&lt;int:category_id&gt;](#del_category_id)
-	* [POST /transactions](#posttrans)
+	* [POST /transactions](#add_transaction)
 	* [GET /transactions/&lt;int:transaction_id&gt;](#get_transaction_id)
 	* [PATCH /transactions/&lt;int:transaction_id&gt;](#patchtrans_id)
 	* [DELETE /transactions/&lt;int:transaction_id&gt;](#deltrans_id)
@@ -287,7 +287,7 @@ Response code:
 > **404** - Категория `category_id` не существует
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
-<a name="posttrans"></a>
+<a name="add_transaction"></a>
 &#9660; Добавление финансовой операции. Доступно только аутентифицированному пользователю.  
 
 **POST** &rArr; `/transactions`  
@@ -307,16 +307,15 @@ Response:
   "id" : int,
   "type" : str, (expenses - расходы; income - доходы)
   "amount" : str, (дробное число типа 189945,56)
-  "comment" : ?str,
-  "date" : ?int, <timestamp>
-  "category_id" : ?int 
+  "comment" : str,
+  "date" : int, <timestamp>
+  "category_id" : int 
 }
 ```
 Response code:
 > **200** - Операция создана успешно  
-> **400** - Не задано обязательное поле в JSON запросе  
+> **400** - Не задано обязательное поле в JSON запросе или категория `category_id` не существует
 > **403** - Тек. пользователь не является владельцем `category_id` категории  
-> **404** - Категория `category_id` не существует
 <p align="right"><a href="#top">[ Наверх ]</a></p>
 
 <a name="get_transaction_id"></a>
@@ -329,7 +328,7 @@ Response:
   "id" : int,
   "type" : str, (expenses - расходы; income - доходы)
   "amount" : str, (дробное число типа 189945,56)
-  "comment" : ?str,
+  "comment" : str,
   "date" : int, <timestamp>
   "category_id" : int
 }
@@ -360,7 +359,7 @@ Response:
   "id" : int,
   "type : str, (expenses - расходы; income - доходы)
   "amount" : str, (дробное число типа 189945,56)
-  "comment" : ?str,
+  "comment" : str,
   "date" : str, <timestamp>
   "category_id" : ?int
 }
@@ -410,15 +409,11 @@ Response:
       "comment" : ?str,
       "type" : str, (expenses - расходы; income - доходы)
       "date" : str, <timestamp>
-      "category" : [
+      "category" :
         {
           "id" : int,
           "name" : str      
-        },
-        {
-          … n …	
         }
-      ]
     },
     {
       … n …	  

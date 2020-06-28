@@ -1493,14 +1493,11 @@
 								"id": "39704225-eb2d-4802-a315-f731e4ce782e",
 								"exec": [
 									"pm.test(\"Создание операции с ID 0 категорией\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
 									"});\r",
 									"\r",
 									"pm.test(\"Проверка JSON ответа\", function () {\r",
 									"    pm.response.to.be.json;\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData).to.have.property(\"id\");\r",
-									"    pm.collectionVariables.set(\"transaction_id\", jsonData.id);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -1554,7 +1551,7 @@
 								"id": "c023af6b-3699-4a72-b2db-29a1a1610b6e",
 								"exec": [
 									"pm.test(\"Создание операции с не существующей категорией\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(404);\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -1880,7 +1877,7 @@
 								"id": "b4c86538-8ae5-462d-932e-6ebc71eb2036",
 								"exec": [
 									"pm.test(\"Изменение операции по ID - Указана ID 0 категория\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
 									"});\r",
 									"\r",
 									"pm.test(\"Проверка JSON ответа\", function () {\r",
@@ -1980,7 +1977,7 @@
 								"id": "2dcb26e7-54d7-4d83-86b5-c89cec372be6",
 								"exec": [
 									"pm.test(\"Изменение операции по ID - категория не существует\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(404);\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -2324,52 +2321,52 @@
 	],
 	"variable": [
 		{
-			"id": "4b0a742e-35e9-49ab-8025-e455f2c67d85",
+			"id": "92ec7ba9-1987-4a2f-9904-8a0c94912cf3",
 			"key": "localhost",
 			"value": "127.0.0.1:5000"
 		},
 		{
-			"id": "5c53c3d1-0b51-421e-bf29-9c5da036b73b",
+			"id": "f14d885e-82ee-4d8d-9b76-0a1dde594fcc",
 			"key": "basic_password",
 			"value": "12345"
 		},
 		{
-			"id": "ec776458-26f4-462a-bf2f-73bcc0cb138b",
+			"id": "faaefecf-8bad-400a-a1bd-b0a9c141706c",
 			"key": "email",
 			"value": "user_one@hds.com"
 		},
 		{
-			"id": "96228aef-e82d-46e8-b38b-194c0d3bc717",
+			"id": "e7735789-e4c7-4ee4-bb31-9f802eb855ef",
 			"key": "first_name",
 			"value": "Vasili"
 		},
 		{
-			"id": "7ff45823-6b8e-4e12-b207-4ff701754e97",
+			"id": "4969da4a-be7e-47f5-8d49-0a195e4a771a",
 			"key": "last_name",
 			"value": "Petrov"
 		},
 		{
-			"id": "471f9fe3-5685-467d-b94a-5320af58f528",
+			"id": "7378c0cf-1f69-4b7d-86f4-712fc03d68dc",
 			"key": "account_id",
 			"value": "1"
 		},
 		{
-			"id": "a0cb95aa-ea14-4a80-900e-d2e5ecfbe0d9",
+			"id": "d41d052c-9f44-4ec4-9e16-9d62eb2fa6a7",
 			"key": "transaction_type",
 			"value": "income"
 		},
 		{
-			"id": "f5aac177-2909-4df9-b006-b2435bd66bc8",
+			"id": "90e0927c-252f-44aa-8fd6-153d925ade19",
 			"key": "transaction_id",
 			"value": "1"
 		},
 		{
-			"id": "ea41245a-47bb-47d0-a55f-8c68d47d70eb",
+			"id": "4d872f49-3137-4c10-af87-1e0a8411dba0",
 			"key": "category_id",
 			"value": "1"
 		},
 		{
-			"id": "edeb348d-dc59-45ca-b852-0952e9955366",
+			"id": "0147585a-751d-4128-8300-4b54dd05a71e",
 			"key": "parent_id",
 			"value": "1"
 		}
