@@ -8,26 +8,58 @@ class CategoriesService:
     def __init__(self, connection):
         self.connection = connection
     
-    @staticmethod
-    def get_subcategories_tree(con, account_id, parent_category):
+
+    def get_subcategories_tree(self, account_id, category_id=None):
         """Получение дерева категорий"""
-        cur = con.execute("""
-            SELECT id, name
-            FROM categories
-            WHERE account_id=? and parent_id = ?
+        def create_tree_category(id):
+            result = []
+            for elem in dict_category:
+                if elem['parent_id'] == id:
+                    result.append(
+                        {
+                            'id': elem['id'],
+                            'name': elem['name'],
+                            'subcategory': create_tree_category(elem['id'])
+                        }
+                    )
+            return result
+        if category_id:
+            query = f"id = {category_id} "
+        else:
+            query = f"parent_id is NULL "
+            
+        cur = self.connection.execute(f"""
+            WITH RECURSIVE subtree(id, name, parent_id)
+            AS (SELECT id, name, 0
+                FROM categories
+                WHERE account_id = {account_id} AND {query}
+            UNION ALL
+                SELECT categories.id, categories.name, categories.parent_id
+                FROM categories
+                INNER JOIN subtree ON categories.parent_id = subtree.id)
+            SELECT id, name, parent_id
+            FROM subtree
             """,
-            (account_id, parent_category['id'])
         )
-        subcategory = [dict(elem) for elem in cur.fetchall()]
-        if subcategory:
-            for i in range(len(subcategory)):
-                subcategory[i] = CategoriesService.get_subcategories_tree(
-                    con,
-                    account_id,
-                    subcategory[i]
-                )
-        parent_category['subcategory'] = subcategory
-        return parent_category
+        dict_category = [dict(elem) for elem in cur.fetchall()]
+        result = []
+        for elem in dict_category:
+            if elem['parent_id'] == 0:
+                if category_id:
+                    result = {
+                        'id': elem['id'],
+                        'name': elem['name'],
+                        'subcategory': create_tree_category(elem['id'])
+                    }
+                else:
+                    result.append(
+                        {
+                            'id': elem['id'],
+                            'name': elem['name'],
+                            'subcategory': create_tree_category(elem['id'])
+                        }
+                    )
+        return result
     
     def parent_category_exists(self, parent_id, account_id, category_id=None):
         """Проверка существования родительской категории"""
