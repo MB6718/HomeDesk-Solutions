@@ -49,7 +49,7 @@ class TransactionView(MethodView):
                         account_id
                     )
                 except CategoryDoesNotExistError:
-                    return '', 404
+                    return '', 400
                 except PermissionError:
                     return '', 403
             return jsonify(transaction), 200
@@ -85,7 +85,7 @@ class TransactionIDView(MethodView):
                     transaction_id
                 )
             except CategoryDoesNotExistError:
-                return '', 404
+                return '', 400
             except PermissionError:
                 return '', 403
         return jsonify(transaction), 200
