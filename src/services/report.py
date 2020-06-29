@@ -65,8 +65,14 @@ class ReportService:
             filters.update(dict_query)
     
         query, params = self.build_report_query(filters)
-        select = 'SELECT * FROM transactions '
-        select_item_count = 'SELECT COUNT(id) FROM transactions '
+        select = """
+        SELECT id, date, amount, type, comment, category_id
+        FROM transactions
+        """
+        select_item_count = """
+        SELECT COUNT(id)
+        FROM transactions
+        """
         cur.execute(select + query, params)
         result = [dict(elem) for elem in cur.fetchall()]
         cur.execute(select_item_count + query, params)
@@ -90,7 +96,14 @@ class ReportService:
         query = query + f'LIMIT {(page - 1) * page_size}, {page_size} '
         cur.execute(select + query, params)
         transactions = [dict(elem) for elem in cur.fetchall()]
-    
+        for elem in transactions:
+            category_id = elem.pop('category_id')
+            cur.execute(f"""
+                SELECT id, name
+                FROM categories
+                WHERE id = {category_id}
+            """)
+            elem['category'] = dict(cur.fetchone())
         if item_count % page_size > 0:
             page_count = item_count // page_size + 1
         else:
