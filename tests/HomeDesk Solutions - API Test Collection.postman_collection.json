@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "f4d4618f-072c-4d55-b0b3-4bceb8c34c58",
+		"_postman_id": "e387bbcb-f375-4f49-b654-fe1172729a87",
 		"name": "HomeDesk Solutions - API Test Collection",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -14,9 +14,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "be629c73-f173-4439-b278-8e5f52b9bbba",
+								"id": "6f8191f7-1849-494b-bc8c-4a18637a8234",
 								"exec": [
-									"pm.test(\"Успешная регистрация нового пользователя\", function () {\r",
+									"pm.test(\"Регистрация нового пользователя\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(201);\r",
 									"});\r",
 									"\r",
@@ -38,7 +38,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "4706a14a-3085-458f-b8e5-592880d9e2d9",
+								"id": "42cf1f67-5225-4ef5-8395-201c23607bfa",
 								"exec": [
 									"//const uuid = Math.random().toString(36).substring(2, 15) +\r",
 									"//        Math.random().toString(36).substring(2, 15);\r",
@@ -90,9 +90,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b7e46c75-6416-46d8-94b6-5ad70fc86709",
+								"id": "6deeed81-244d-4a97-a214-edf67b436432",
 								"exec": [
-									"pm.test(\"Успешная обработка ошибки - Такой логин уже используется\", function () {\r",
+									"pm.test(\"Регистрация - Логин уже используется\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(409);\r",
 									"});"
 								],
@@ -125,14 +125,58 @@
 					"response": []
 				},
 				{
+					"name": "Регистрация (неверные поля запроса)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4a703ef7-cb03-4962-aaa6-98c97fe808c1",
+								"exec": [
+									"pm.test(\"Регистрация - Неверные поля JSON запроса\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"first_name\" : \"{{first_name}}\",\r\n    \"last_mame\" :  \"{{last_name}}\",\r\n    \"email\" : \"brbrbr@br@.com\",\r\n    \"pasrwod\" : \"{{basic_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/users",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Аутентификация",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "2469ae47-b2dc-4f48-8a8b-5c12270f7a3a",
+								"id": "0fb47903-c5dc-4444-a48a-58a927fa7a6a",
 								"exec": [
-									"pm.test(\"Успешная аутентификация пользователя\", function () {\r",
+									"pm.test(\"Аутентификация пользователя\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
 									"});"
 								],
@@ -171,9 +215,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "d92f0d20-e7bc-405a-bbbe-38a6bf86956a",
+								"id": "874afe1b-160a-4549-b690-c520eefd0242",
 								"exec": [
-									"pm.test(\"Выход произведён успешно\", function () {\r",
+									"pm.test(\"Выход\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
 									"});"
 								],
@@ -203,10 +247,10 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "3e9681f1-43bd-4401-94cf-f8c78d3f0198",
+								"id": "10a9eff5-e4ed-45b0-a16c-84dacd0bb5b6",
 								"exec": [
-									"pm.test(\"Проверка входа по неверному логину\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(404);\r",
+									"pm.test(\"Аутентификация - вход по неверному логину\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(403);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -244,9 +288,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f46fe35d-c39a-4dc3-92c5-a33a3a4daf60",
+								"id": "98987261-939d-4ac1-805c-70c7acbed07d",
 								"exec": [
-									"pm.test(\"Проверка входа по неверному паролю\", function () {\r",
+									"pm.test(\"Аутентификация - вход по неверному паролю\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(403);\r",
 									"});"
 								],
@@ -280,14 +324,59 @@
 					"response": []
 				},
 				{
+					"name": "Аутентификация (Неверные поля запроса)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a6c36363-3b81-43a6-a113-2346a12de1ec",
+								"exec": [
+									"pm.test(\"Аутентификация - Неверные поля JSON запроса\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"email\" : \"example@mail@.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/auth/login",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Аутентификация (заново, для автотеста)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "3bac7d7d-c53c-4476-a455-159077111c5f",
+								"id": "9b5dfecf-393b-44a2-bcfe-409f615fd614",
 								"exec": [
-									"pm.test(\"Успешная аутентификация пользователя\", function () {\r",
+									"pm.test(\"Аутентификация\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
 									"});"
 								],
@@ -332,9 +421,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ee315926-2be0-4fbf-b710-1628b1e0a9c3",
+								"id": "9468cae2-211c-49b6-9692-348a727a3fb3",
 								"exec": [
-									"pm.test(\"Cоздание категории\", function () {\r",
+									"pm.test(\"Cоздание коренной категории\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
 									"});\r",
 									"\r",
@@ -379,7 +468,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "1a672279-aab6-4677-8cf4-10ac7f0fdf7d",
+								"id": "697e8598-1957-48b0-9d0d-23c7edcd2a5b",
 								"exec": [
 									"pm.test(\"Создание уже существующей категории\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(409);\r",
@@ -419,7 +508,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "04fcb536-4e11-4821-8551-995709a07bf7",
+								"id": "64c0e2f8-7e3e-41c6-8b10-cc59066e5dc9",
 								"exec": [
 									"pm.test(\"Создание подкатегории\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
@@ -438,7 +527,94 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"Продукты\",\r\n    \"parent_id\" : 1\r\n}\r\n",
+							"raw": "{\r\n    \"name\" : \"Шашлык\",\r\n    \"parent_id\" : {{category_id}}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/categories",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание подкатегории (с тем же родителем)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ecd36e06-0d84-4663-8366-0b9ff20b5657",
+								"exec": [
+									"pm.test(\"Создание подкатегории\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.collectionVariables.set(\"category_id\", jsonData.subcategory.id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Продукты\",\r\n    \"parent_id\" : {{category_id}}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/categories",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание подкатегории (нет прав на родителя)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "73df27cf-4eba-473a-a92e-c8455804c801",
+								"exec": [
+									"pm.test(\"Создание подкатегории - чужой родитель, нет прав\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(403);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Яблоки\",\r\n    \"parent_id\" : 1\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -463,10 +639,10 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "cf2ca56e-c3d3-408b-b247-63bf05ba3e87",
+								"id": "14abb32a-8a92-40e0-b9e9-65b7f3965e11",
 								"exec": [
-									"pm.test(\"Создание подкатегории с несущ. родителем\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(404);\r",
+									"pm.test(\"Создание подкатегории с несуществующим родителем\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -498,12 +674,117 @@
 					"response": []
 				},
 				{
+					"name": "Создание подподкатегории",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d2fb859b-4349-4cd7-937a-b8e0bb744829",
+								"exec": [
+									"pm.test(\"Создание подкатегории\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.collectionVariables.set(\"category_id\", jsonData.subcategory.id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Яблоки\",\r\n    \"parent_id\" : {{category_id}}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/categories",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание подподкатегории (с тем же родителем)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b71118c3-b6a1-437d-8222-53c6df5a3b22",
+								"exec": [
+									"pm.test(\"Создание подкатегории\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.collectionVariables.set(\"category_id\", jsonData.subcategory.id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "68826da9-15e6-4a3f-8797-0c426e2cb804",
+								"exec": [
+									"var category_id = pm.collectionVariables.get(\"category_id\")\r",
+									"pm.collectionVariables.set(\"category_id\", category_id-1);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"БаНаНа\",\r\n    \"parent_id\" : {{category_id}}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/categories",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Изменение категории",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "76a70b3f-d5e0-4694-b174-3151ca3ec89f",
+								"id": "87c298d4-ddea-4d83-9109-f5086b6fa1e5",
 								"exec": [
 									"pm.test(\"Изменение категории\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
@@ -548,12 +829,15 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "68be45fa-9dd0-4f6c-9300-99039f5ac3c8",
+								"id": "e6e97045-2586-4e4e-9cf3-937165c3c34f",
 								"exec": [
 									"pm.test(\"Изменение категории на уже существующую\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(403);\r",
+									"    pm.expect(pm.response.code).to.eql(409);\r",
 									"});\r",
-									""
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -564,7 +848,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\" : \"Протухты\"\r\n}",
+							"raw": "{\r\n    \"name\" : \"Продукты\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -588,9 +872,20 @@
 					"name": "Изменение категории (меняем вложенность, род. сущ.)",
 					"event": [
 						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7bd6c3b9-77b8-4c5a-948d-1e7ae853086c",
+								"exec": [
+									"var category_id = pm.collectionVariables.get(\"category_id\")\r",
+									"pm.collectionVariables.set(\"parent_id\", category_id-3);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
 							"listen": "test",
 							"script": {
-								"id": "f3fe9ce0-2585-455f-adb9-2f2c2acad294",
+								"id": "573fb62d-8345-4407-8a68-fbf450ddc088",
 								"exec": [
 									"pm.test(\"Изменение категории успешно\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
@@ -609,7 +904,48 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"parent_id\" : 3\r\n}",
+							"raw": "{\r\n    \"parent_id\" : {{parent_id}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/categories/{{category_id}}",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"categories",
+								"{{category_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение категории (меняем вложенность, НЕТ прав)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "512e7c5c-6181-4725-9f91-f12c07df948b",
+								"exec": [
+									"pm.test(\"Изменение категории успешно\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(403);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"parent_id\" : 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -635,10 +971,10 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e272de2c-c2da-4ecd-b314-5fb25fb244aa",
+								"id": "6b0d673d-0330-4eaa-8256-879c9072e041",
 								"exec": [
 									"pm.test(\"Изменение категории успешно\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(404);\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -676,7 +1012,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4cc1b45a-3ec1-4bba-bca2-f37b8d89b391",
+								"id": "d5763a48-08e7-47e2-a276-05089b983785",
 								"exec": [
 									"pm.test(\"Получение всех категорий пользователя\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
@@ -711,7 +1047,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "2458c9ac-e999-4ecc-b30a-442146f458d3",
+								"id": "a0a0cfe9-c536-4f5e-809d-b30ad89c2c9a",
 								"exec": [
 									"pm.test(\"Получение категории по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
@@ -742,12 +1078,59 @@
 					"response": []
 				},
 				{
+					"name": "Получить категорию по ID (имеющ. подкатегории)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cea11c63-7642-49da-aff5-38a9a5a212ee",
+								"exec": [
+									"pm.test(\"Получение категории по ID - имеющую подкатегории\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7fc5fb91-1db2-48b0-ad3d-06d30a562b33",
+								"exec": [
+									"var category_id = pm.collectionVariables.get(\"category_id\")\r",
+									"pm.collectionVariables.set(\"category_id\", category_id-3);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{localhost}}/categories/{{category_id}}",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"categories",
+								"{{category_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Получить категорию по ID (ID не существует)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "29eccf45-5533-41e9-bd85-56a66cbf9456",
+								"id": "eed4c22d-356e-411b-a488-5e68534aeabd",
 								"exec": [
 									"pm.test(\"Получение категории по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(404);\r",
@@ -779,7 +1162,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "094848ff-7ab0-42f5-9024-1a495b27faee",
+								"id": "045679cf-c6bd-4db9-9c5d-bec24126b258",
 								"exec": [
 									"pm.test(\"Получение категории по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(403);\r",
@@ -793,13 +1176,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{localhost}}/categories/10",
+							"raw": "{{localhost}}/categories/1",
 							"host": [
 								"{{localhost}}"
 							],
 							"path": [
 								"categories",
-								"10"
+								"1"
 							]
 						}
 					},
@@ -811,11 +1194,25 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "bce8c73f-b816-4d9a-bf97-00847f726e38",
+								"id": "0b6bd606-4bf8-4a1b-a490-304300a2ef61",
 								"exec": [
-									"pm.test(\"Удаление категории успешно\", function () {\r",
+									"pm.test(\"Удаление категории по ID - Рекрсивно со всеми подгатегориями\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(204);\r",
-									"});"
+									"});\r",
+									"\r",
+									"var category_id = pm.collectionVariables.get(\"category_id\")\r",
+									"pm.collectionVariables.set(\"category_id\", category_id-1);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "fcd5b321-fd29-48e0-acdc-071abe30514e",
+								"exec": [
+									"var parent_id = pm.collectionVariables.get(\"parent_id\")\r",
+									"pm.collectionVariables.set(\"category_id\", parent_id);"
 								],
 								"type": "text/javascript"
 							}
@@ -843,7 +1240,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6e41144a-3490-4de2-8805-e52d279809d7",
+								"id": "ea26b091-401b-4ece-bfd8-2b9f8f005b30",
 								"exec": [
 									"pm.test(\"Удаление категории успешно\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(404);\r",
@@ -875,7 +1272,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "fc8fe24a-6a1d-4e19-bb6b-4fb7c6836911",
+								"id": "dc82e11c-9fdd-4d83-920b-c0ee1b225fe6",
 								"exec": [
 									"pm.test(\"Удаление категории успешно\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(403);\r",
@@ -889,13 +1286,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{localhost}}/categories/10",
+							"raw": "{{localhost}}/categories/1",
 							"host": [
 								"{{localhost}}"
 							],
 							"path": [
 								"categories",
-								"10"
+								"1"
 							]
 						}
 					},
@@ -913,9 +1310,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "db71bca6-46f6-4c22-83f9-cc88801a08b8",
+								"id": "88befe64-dbe2-43c6-b795-2857fdb0cffb",
 								"exec": [
-									"pm.test(\"Операция создана\", function () {\r",
+									"pm.test(\"Создание операции\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
 									"});\r",
 									"\r",
@@ -932,7 +1329,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "2a79d3f5-c16c-45e6-ba75-5d0b431cd463",
+								"id": "956cc860-a322-41f6-823b-d2424695b636",
 								"exec": [
 									"const array_transaction_type = [\"income\", \"expenses\"];\r",
 									"pm.collectionVariables.set(\r",
@@ -949,7 +1346,184 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}},\r\n  \"category_id\" : 1\r\n}",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}},\r\n  \"category_id\" : {{category_id}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transactions",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание операции (неверное тело запроса)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1e2eeb49-46b7-409e-8aee-883a9ba02e82",
+								"exec": [
+									"pm.test(\"Создание операции с неверным телом запроса\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "1d7563e1-2b4f-48d0-a58a-9e668834eef5",
+								"exec": [
+									"const array_transaction_type = [\"income\", \"expenses\"];\r",
+									"pm.collectionVariables.set(\r",
+									"    \"transaction_type\",\r",
+									"    array_transaction_type[_.random(array_transaction_type.length-1)]\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"a1b2c3\",\r\n  \"amount\" : \"many\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transactions",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание операции (без указания категории)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e00d3abd-f31d-4929-906b-f0a7b1920e42",
+								"exec": [
+									"pm.test(\"Создание операции без указания категории\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.collectionVariables.set(\"transaction_id\", jsonData.id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "38ad375a-26ed-4ad1-a8ef-a0d0fa7cab57",
+								"exec": [
+									"const array_transaction_type = [\"income\", \"expenses\"];\r",
+									"pm.collectionVariables.set(\r",
+									"    \"transaction_type\",\r",
+									"    array_transaction_type[_.random(array_transaction_type.length-1)]\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transactions",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создание операции (с ID 0 категорией)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "39704225-eb2d-4802-a315-f731e4ce782e",
+								"exec": [
+									"pm.test(\"Создание операции с ID 0 категорией\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4118fa6b-339e-47cd-9a24-2e232d016570",
+								"exec": [
+									"const array_transaction_type = [\"income\", \"expenses\"];\r",
+									"pm.collectionVariables.set(\r",
+									"    \"transaction_type\",\r",
+									"    array_transaction_type[_.random(array_transaction_type.length-1)]\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}},\r\n  \"category_id\" : 0\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -974,10 +1548,10 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "d9133441-5f9c-446b-b85c-dd18e6b94a57",
+								"id": "c023af6b-3699-4a72-b2db-29a1a1610b6e",
 								"exec": [
-									"pm.test(\"Операция создана\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(404);\r",
+									"pm.test(\"Создание операции с не существующей категорией\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -986,7 +1560,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "5cd9e700-33b7-4501-a014-560def65ebab",
+								"id": "8dd14021-c26d-419e-b777-dbd87d5e1de2",
 								"exec": [
 									"const array_transaction_type = [\"income\", \"expenses\"];\r",
 									"pm.collectionVariables.set(\r",
@@ -1028,9 +1602,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "38b61b67-0635-474f-8303-63aa961b29a8",
+								"id": "106450fd-9d84-4c62-a749-8f170679a0f0",
 								"exec": [
-									"pm.test(\"Операция создана\", function () {\r",
+									"pm.test(\"Создание операции с отсутсвующими правами на категорию\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(403);\r",
 									"});"
 								],
@@ -1040,7 +1614,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "fcaebe9e-125a-4134-8bba-59c0f6c61e9f",
+								"id": "2a0cb2be-4213-4731-87f9-3ff159b216f9",
 								"exec": [
 									"const array_transaction_type = [\"income\", \"expenses\"];\r",
 									"pm.collectionVariables.set(\r",
@@ -1082,7 +1656,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b840deff-c5d2-482c-b1f5-790edd226c3d",
+								"id": "15c7e106-b424-4d7a-b58a-4bb3d659daf1",
 								"exec": [
 									"pm.test(\"Получение операции по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
@@ -1118,9 +1692,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "5af4467f-998c-403f-baa0-9754b4c97e17",
+								"id": "27b986fd-2738-4a9a-bb7a-bd773d17cf31",
 								"exec": [
-									"pm.test(\"Получение операции по ID\", function () {\r",
+									"pm.test(\"Получение операции по не существующему ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(404);\r",
 									"});"
 								],
@@ -1150,9 +1724,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "4ad9df3e-faf1-4521-9ed0-269271d00818",
+								"id": "5ae8db7a-99ac-453e-ae9e-dd9c695fe375",
 								"exec": [
-									"pm.test(\"Получение операции по ID\", function () {\r",
+									"pm.test(\"Получение операции по чужому ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(403);\r",
 									"});"
 								],
@@ -1182,7 +1756,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ef1ffb78-2c84-4844-a2fd-65d082c0ca04",
+								"id": "6f136081-5cb7-4ba4-85ab-a34bd0602e8c",
 								"exec": [
 									"pm.test(\"Изменение операции по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
@@ -1191,6 +1765,20 @@
 									"pm.test(\"Проверка JSON ответа\", function () {\r",
 									"    pm.response.to.be.json;\r",
 									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "eaf02ed2-42af-43d8-984b-44c9c61d4206",
+								"exec": [
+									"const array_transaction_type = [\"income\", \"expenses\"];\r",
+									"pm.collectionVariables.set(\r",
+									"    \"transaction_type\",\r",
+									"    array_transaction_type[_.random(array_transaction_type.length-1)]\r",
+									");"
 								],
 								"type": "text/javascript"
 							}
@@ -1222,15 +1810,174 @@
 					"response": []
 				},
 				{
+					"name": "Изменение операции по ID (некоторые поля)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0d939153-211f-4594-a85a-dda7d9585d9d",
+								"exec": [
+									"pm.test(\"Изменение операции по ID - указаны некоторые поля\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8b570235-99b7-4dfc-b5f9-e31d9240d2dd",
+								"exec": [
+									"const array_transaction_type = [\"income\", \"expenses\"];\r",
+									"pm.collectionVariables.set(\r",
+									"    \"transaction_type\",\r",
+									"    array_transaction_type[_.random(array_transaction_type.length-1)]\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transactions/{{transaction_id}}",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions",
+								"{{transaction_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение операции по ID (категория ID 0)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b4c86538-8ae5-462d-932e-6ebc71eb2036",
+								"exec": [
+									"pm.test(\"Изменение операции по ID - Указана ID 0 категория\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Проверка JSON ответа\", function () {\r",
+									"    pm.response.to.be.json;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7421766f-5d5a-4f47-8eb6-dd0ced04261d",
+								"exec": [
+									"const array_transaction_type = [\"income\", \"expenses\"];\r",
+									"pm.collectionVariables.set(\r",
+									"    \"transaction_type\",\r",
+									"    array_transaction_type[_.random(array_transaction_type.length-1)]\r",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\",\r\n  \"date\" : {{$timestamp}},\r\n  \"category_id\" : 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transactions/{{transaction_id}}",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions",
+								"{{transaction_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Изменение операции по ID (ID не существует)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "99040474-fb4c-43f9-bcd8-7c91c88768fb",
+								"exec": [
+									"pm.test(\"Изменение операции по не существующему ID\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(404);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/transactions/1001",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"transactions",
+								"1001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Изменение операции по ID (не сущ. категория)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "3420349c-f192-421f-85b0-85932b201d22",
+								"id": "2dcb26e7-54d7-4d83-86b5-c89cec372be6",
 								"exec": [
-									"pm.test(\"Изменение операции по ID\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(404);\r",
+									"pm.test(\"Изменение операции по ID - категория не существует\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -1268,9 +2015,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a3dc3409-29d8-4871-b198-0331a9c45b28",
+								"id": "362c09c2-35f7-4c4e-8215-9ff7ae8b66c2",
 								"exec": [
-									"pm.test(\"Изменение операции по ID\", function () {\r",
+									"pm.test(\"Изменение операции по ID - нет прав на категорию\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(403);\r",
 									"});"
 								],
@@ -1304,55 +2051,14 @@
 					"response": []
 				},
 				{
-					"name": "Изменение операции по ID (ID не существует)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "0747d3ba-f062-4499-94e1-8bb7952e0db5",
-								"exec": [
-									"pm.test(\"Изменение операции по ID\", function () {\r",
-									"    pm.expect(pm.response.code).to.eql(404);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"type\" : \"{{transaction_type}}\",\r\n  \"amount\" : \"{{$randomPrice}}\",\r\n  \"comment\" : \"{{$randomLoremWords}}\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{localhost}}/transactions/1001",
-							"host": [
-								"{{localhost}}"
-							],
-							"path": [
-								"transactions",
-								"1001"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Изменение операции по ID (не явл. владельцем)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "7ef4bf3d-f9f8-4379-9e97-5ef99b1d81b1",
+								"id": "4857227c-4944-4df5-b532-963c492605ea",
 								"exec": [
-									"pm.test(\"Изменение операции по ID\", function () {\r",
+									"pm.test(\"Изменение операции по ID - чужая категория, нет прав\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(403);\r",
 									"});"
 								],
@@ -1391,7 +2097,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "0d724d56-5f61-4481-8faf-32eb89174d61",
+								"id": "ed4b3613-7d25-47b1-a682-1870ca93a406",
 								"exec": [
 									"pm.test(\"Удаление операции по ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(204);\r",
@@ -1423,9 +2129,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "209cc67d-db09-4f43-aa54-d51a443ddc3a",
+								"id": "29426a40-2b1f-4bfd-bc92-1068249c5907",
 								"exec": [
-									"pm.test(\"Удаление операции по ID\", function () {\r",
+									"pm.test(\"Удаление операции по не существующему ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(404);\r",
 									"});"
 								],
@@ -1455,9 +2161,9 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "df1bbfba-b702-45a6-beaf-95b356b4d4ff",
+								"id": "5fdc99de-de63-4bb9-b40f-dcb4f5493452",
 								"exec": [
-									"pm.test(\"Удаление операции по ID\", function () {\r",
+									"pm.test(\"Удаление операции по чужому ID\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(403);\r",
 									"});"
 								],
@@ -1486,7 +2192,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "9a882ff1-c064-4f6e-8007-07fcb22c1eb0",
+						"id": "4003fa1a-8119-4e61-81e1-928b6166b69d",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -1496,7 +2202,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "1e35daab-4308-414e-87e5-44161e3d91c5",
+						"id": "35576943-253f-4ddc-846e-cbf77128db81",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -1510,14 +2216,55 @@
 			"name": "Отчёт",
 			"item": [
 				{
+					"name": "ПереАутентификация",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "eee731a8-29ac-44b7-afc3-0341d7440a69",
+								"exec": [
+									"pm.test(\"Аутентификация\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"email\" : \"maxbee@mail.com\",\r\n\t\"password\" : \"{{basic_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/auth/login",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Получить отчёт",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "5a9452e0-2d10-4a33-89c7-2d54118ae3df",
+								"id": "ed333196-aae9-4d91-aada-6dfc5e53aeef",
 								"exec": [
-									"pm.test(\"Получение отчёта успешно\", function () {\r",
+									"pm.test(\"Получение отчёта\", function () {\r",
 									"    pm.expect(pm.response.code).to.eql(200);\r",
 									"});\r",
 									"\r",
@@ -1531,7 +2278,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "792f8631-3de8-49c6-a969-c7dd75966d4a",
+								"id": "e26a0a10-f2ee-43b6-9d67-924281a6ceb6",
 								"exec": [
 									""
 								],
@@ -1543,11 +2290,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:5000/report",
+							"raw": "{{localhost}}/report",
 							"host": [
-								"localhost"
+								"{{localhost}}"
 							],
-							"port": "5000",
 							"path": [
 								"report"
 							],
@@ -1564,22 +2310,22 @@
 								},
 								{
 									"key": "type",
-									"value": null,
+									"value": "income",
 									"disabled": true
 								},
 								{
 									"key": "category_id",
-									"value": null,
+									"value": "1",
 									"disabled": true
 								},
 								{
 									"key": "page_size",
-									"value": null,
+									"value": "5",
 									"disabled": true
 								},
 								{
 									"key": "page",
-									"value": null,
+									"value": "1",
 									"disabled": true
 								}
 							]
@@ -1595,7 +2341,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "dfd10397-7d2c-4b15-8e5b-fa8f256402f7",
+				"id": "5bdfc70a-4583-4ea7-9a7e-4a1ec0049f72",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -1605,7 +2351,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "14533b1b-c69f-44ac-8202-4e838d4b4a70",
+				"id": "4f7d2fb7-e6d9-4d15-86c9-f54149b0c2d1",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -1615,58 +2361,54 @@
 	],
 	"variable": [
 		{
-			"id": "ec03d26b-f63d-4761-877f-89ad64effe19",
+			"id": "adbd37eb-3fee-4916-a421-fb341adce5e0",
 			"key": "localhost",
-			"value": "127.0.0.1:5000",
-			"type": "string"
+			"value": "127.0.0.1:5000"
 		},
 		{
-			"id": "5955b335-cf4b-4a27-a8c3-d1cac8bd98de",
+			"id": "a3f58c46-be7c-49fd-ac5f-a4946ee67cd7",
 			"key": "basic_password",
-			"value": "12345",
-			"type": "string"
+			"value": "12345"
 		},
 		{
-			"id": "3f61cea4-5fd4-4d82-a315-6d9a90ab986d",
+			"id": "8599c266-8062-41a3-9ace-47d322ece391",
 			"key": "email",
-			"value": "user_one@hds.com",
-			"type": "string"
+			"value": "user_one@hds.com"
 		},
 		{
-			"id": "7bd40bf0-5b3a-49f0-979d-f5c76abce129",
+			"id": "396893a1-e9d4-4504-945c-88929782e9e7",
 			"key": "first_name",
-			"value": "Vasili",
-			"type": "string"
+			"value": "Vasili"
 		},
 		{
-			"id": "6c8b2359-a743-4637-ae0c-89cd66fc5104",
+			"id": "92a6fcdd-3900-4f18-96f6-0d71767b3576",
 			"key": "last_name",
-			"value": "Petrov",
-			"type": "string"
+			"value": "Petrov"
 		},
 		{
-			"id": "0ce5bc7d-6e92-480e-9461-b6c8a4195c3b",
+			"id": "08d3bee0-792a-4232-9723-c3c34c36190d",
 			"key": "account_id",
-			"value": "1",
-			"type": "string"
+			"value": "1"
 		},
 		{
-			"id": "2e333188-ae04-436c-af84-25b2ac869459",
+			"id": "0f22d9e9-dfbc-4196-a128-3465afa23000",
 			"key": "transaction_type",
-			"value": "income",
-			"type": "string"
+			"value": "income"
 		},
 		{
-			"id": "279e769e-ea37-4e47-9dcb-4dcc64a0369e",
+			"id": "6bce1bd8-0f0d-47da-960d-cc401ac31f84",
 			"key": "transaction_id",
-			"value": "1",
-			"type": "string"
+			"value": "1"
 		},
 		{
-			"id": "6ccc01f3-dec0-4410-98a1-d374d4c1c43a",
+			"id": "95e0747b-e289-4c46-abfa-7877908f993f",
 			"key": "category_id",
-			"value": "1",
-			"type": "string"
+			"value": "1"
+		},
+		{
+			"id": "35f0eded-17ce-494f-b496-c4a55cf579e4",
+			"key": "parent_id",
+			"value": "1"
 		}
 	],
 	"protocolProfileBehavior": {}
