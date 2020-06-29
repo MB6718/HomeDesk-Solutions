@@ -2249,11 +2249,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:5000/report",
+							"raw": "{{localhost}}/report",
 							"host": [
-								"localhost"
+								"{{localhost}}"
 							],
-							"port": "5000",
 							"path": [
 								"report"
 							],
@@ -2280,7 +2279,7 @@
 								},
 								{
 									"key": "page_size",
-									"value": null,
+									"value": "30",
 									"disabled": true
 								},
 								{
@@ -2321,52 +2320,52 @@
 	],
 	"variable": [
 		{
-			"id": "92ec7ba9-1987-4a2f-9904-8a0c94912cf3",
+			"id": "1afa1edd-9778-46af-bde7-ad485cf1ae35",
 			"key": "localhost",
 			"value": "127.0.0.1:5000"
 		},
 		{
-			"id": "f14d885e-82ee-4d8d-9b76-0a1dde594fcc",
+			"id": "747067b6-c521-4f1b-ba3f-6f40969bc79f",
 			"key": "basic_password",
 			"value": "12345"
 		},
 		{
-			"id": "faaefecf-8bad-400a-a1bd-b0a9c141706c",
+			"id": "f92cd9dc-9675-4fce-a4f7-9e999e852978",
 			"key": "email",
 			"value": "user_one@hds.com"
 		},
 		{
-			"id": "e7735789-e4c7-4ee4-bb31-9f802eb855ef",
+			"id": "2960877b-fe4f-42e4-91f3-f1e802d9a5ed",
 			"key": "first_name",
 			"value": "Vasili"
 		},
 		{
-			"id": "4969da4a-be7e-47f5-8d49-0a195e4a771a",
+			"id": "47d60bf4-529a-4141-96b7-c7bc6d943df6",
 			"key": "last_name",
 			"value": "Petrov"
 		},
 		{
-			"id": "7378c0cf-1f69-4b7d-86f4-712fc03d68dc",
+			"id": "dc34aaa6-5602-4752-9024-c9a3fcef77cc",
 			"key": "account_id",
 			"value": "1"
 		},
 		{
-			"id": "d41d052c-9f44-4ec4-9e16-9d62eb2fa6a7",
+			"id": "9dbf3909-c443-476a-b4fe-f36e0c1a8b86",
 			"key": "transaction_type",
 			"value": "income"
 		},
 		{
-			"id": "90e0927c-252f-44aa-8fd6-153d925ade19",
+			"id": "e3061114-9bac-4aa3-897e-c52193f1aab9",
 			"key": "transaction_id",
 			"value": "1"
 		},
 		{
-			"id": "4d872f49-3137-4c10-af87-1e0a8411dba0",
+			"id": "547f024c-9d8d-4960-89aa-8ecad523d7fb",
 			"key": "category_id",
 			"value": "1"
 		},
 		{
-			"id": "0147585a-751d-4128-8300-4b54dd05a71e",
+			"id": "147b0a54-579c-4bf4-b8d0-b3ffc8cd35cf",
 			"key": "parent_id",
 			"value": "1"
 		}
