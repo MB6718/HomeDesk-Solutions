@@ -17,31 +17,34 @@ class ReportService:
         for key, value in filters.items():
             if key == 'category_id':
                 """Проверка категории на существование, наличие прав"""
-                CategoriesService(self.connection).parent_category_exists(value, filters['account_id'])
-                """Поиск всех категорий-детей"""
-                cur = self.connection.execute(f"""
-                    WITH RECURSIVE subtree(id)
-                    AS (SELECT id
-                        FROM categories
-                        WHERE account_id = {filters['account_id']} AND id = {value}
-                    UNION ALL
-                        SELECT categories.id
-                        FROM categories
-                        INNER JOIN subtree ON categories.parent_id = subtree.id)
-                    SELECT id
-                    FROM subtree
-                    ORDER BY id
-                    """,
-                )
-                list_id = []
-                for elem in cur.fetchall():
-                    list_id.append(elem[0])
-                if len(list_id) == 1:
-                    list_id = list_id[0]
-                    where_clauses.append(f' {key} = {list_id} ')
+                if value == '0':
+                    where_clauses.append(f' {key} is NULL ')
                 else:
-                    list_id = tuple(list_id)
-                    where_clauses.append(f' {key} IN {list_id} ')
+                    CategoriesService(self.connection).parent_category_exists(value, filters['account_id'])
+                    """Поиск всех категорий-детей"""
+                    cur = self.connection.execute(f"""
+                        WITH RECURSIVE subtree(id)
+                        AS (SELECT id
+                            FROM categories
+                            WHERE account_id = {filters['account_id']} AND id = {value}
+                        UNION ALL
+                            SELECT categories.id
+                            FROM categories
+                            INNER JOIN subtree ON categories.parent_id = subtree.id)
+                        SELECT id
+                        FROM subtree
+                        ORDER BY id
+                        """,
+                    )
+                    list_id = []
+                    for elem in cur.fetchall():
+                        list_id.append(elem[0])
+                    if len(list_id) == 1:
+                        list_id = list_id[0]
+                        where_clauses.append(f' {key} = {list_id} ')
+                    else:
+                        list_id = tuple(list_id)
+                        where_clauses.append(f' {key} IN {list_id} ')
             elif key == 'from':
                 where_clauses.append(f' date >= ?')
                 params.append(value)
@@ -84,12 +87,12 @@ class ReportService:
                 total += float(elem['amount'])
             item_count += 1
         """Конструктор запроса LIMIT/OFFSET"""
-        if 'page_size' in filters:
+        if 'page_size' in filters and int(filters["page_size"]) > 0:
             page_size = int(filters["page_size"])
         else:
             page_size = 20
     
-        if 'page' in filters:
+        if 'page' in filters and int(filters["page"]) > 0:
             page = int(filters["page"])
         else:
             page = 1
