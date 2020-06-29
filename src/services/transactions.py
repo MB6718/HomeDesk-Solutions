@@ -13,8 +13,10 @@ class TransactionsService:
         """ Проверяет существование и является ли account_id
             владельцем категории под category_id """
         if category_id is not None:
-            CategoriesService(self.connection).parent_category_exists(category_id, account_id)
-            CategoriesService(self.connection).is_category_owner(category_id, account_id)
+            CategoriesService(self.connection).parent_category_exists(
+                category_id,
+                account_id
+            )
     
     def create_transaction(self, transaction, account_id):
         """ Добавление транзакции в БД """
