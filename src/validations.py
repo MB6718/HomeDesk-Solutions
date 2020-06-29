@@ -19,7 +19,7 @@ class UsersSchema(Schema):
 
 class CategoryIDField(fields.Field):
     def _deserialize(self, value, attr, data, **kwargs):
-        if float(value):
+        if type(value) == float:
             raise ValidationError('ID cant be float')
         if value <= 0:
             raise ValidationError('The ID cannot be less than zero')
