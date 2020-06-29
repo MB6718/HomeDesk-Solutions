@@ -55,7 +55,7 @@ class EditTransactionsSchema(Schema):
     amount = fields.Float()
     comment = fields.Str()
     date = fields.Int()
-    category_id = fields.Int()
+    category_id = CategoryIDField()
 
 
 class CreateCategorySchema(Schema):
