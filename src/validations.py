@@ -60,4 +60,4 @@ class EditTransactionsSchema(Schema):
 
 class CreateCategorySchema(Schema):
     name = fields.Str(required=True)
-    parent_id = fields.Int()
+    parent_id = fields.Int(strict=True)
