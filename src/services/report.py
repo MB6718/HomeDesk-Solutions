@@ -7,6 +7,7 @@ class ReportService:
         self.connection = connection
     
     def build_report_query(self, filters):
+        """Конструктор запроса WHERE"""
         query_template = """
             {where_query}
             ORDER BY date
@@ -15,7 +16,9 @@ class ReportService:
         params = []
         for key, value in filters.items():
             if key == 'category_id':
+                """Проверка категории на существование, наличие прав"""
                 CategoriesService(self.connection).parent_category_exists(value, filters['account_id'])
+                """Поиск всех категорий-детей"""
                 cur = self.connection.execute(f"""
                     WITH RECURSIVE subtree(id)
                     AS (SELECT id
@@ -63,27 +66,24 @@ class ReportService:
         filters = {'account_id': account_id}
         if dict_query:
             filters.update(dict_query)
-    
+        
         query, params = self.build_report_query(filters)
         select = """
         SELECT id, date, amount, type, comment, category_id
         FROM transactions
         """
-        select_item_count = """
-        SELECT COUNT(id)
-        FROM transactions
-        """
+        """Подсчёт total и item_count"""
         cur.execute(select + query, params)
         result = [dict(elem) for elem in cur.fetchall()]
-        cur.execute(select_item_count + query, params)
-        item_count = dict(cur.fetchone())['COUNT(id)']
+        item_count = 0
         total = 0
         for elem in result:
             if elem['type'] == 'expenses':
                 total -= float(elem['amount'])
             elif elem['type'] == 'income':
                 total += float(elem['amount'])
-        
+            item_count += 1
+        """Конструктор запроса LIMIT/OFFSET"""
         if 'page_size' in filters:
             page_size = int(filters["page_size"])
         else:
@@ -94,6 +94,7 @@ class ReportService:
         else:
             page = 1
         query = query + f'LIMIT {(page - 1) * page_size}, {page_size} '
+        """Контрольный запрос получения транзакций с учётом пагинации"""
         cur.execute(select + query, params)
         transactions = [dict(elem) for elem in cur.fetchall()]
         for elem in transactions:
