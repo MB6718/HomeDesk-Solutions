@@ -99,12 +99,15 @@ class ReportService:
         transactions = [dict(elem) for elem in cur.fetchall()]
         for elem in transactions:
             category_id = elem.pop('category_id')
-            cur.execute(f"""
-                SELECT id, name
-                FROM categories
-                WHERE id = {category_id}
-            """)
-            elem['category'] = dict(cur.fetchone())
+            if category_id:
+                cur.execute(f"""
+                    SELECT id, name
+                    FROM categories
+                    WHERE id = {category_id}
+                """)
+                elem['category'] = dict(cur.fetchone())
+            else:
+                elem['category'] = None
         if item_count % page_size > 0:
             page_count = item_count // page_size + 1
         else:
