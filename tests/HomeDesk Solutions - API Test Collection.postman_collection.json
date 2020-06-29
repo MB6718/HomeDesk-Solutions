@@ -2216,6 +2216,47 @@
 			"name": "Отчёт",
 			"item": [
 				{
+					"name": "ПереАутентификация",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "eee731a8-29ac-44b7-afc3-0341d7440a69",
+								"exec": [
+									"pm.test(\"Аутентификация\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"email\" : \"maxbee@mail.com\",\r\n\t\"password\" : \"{{basic_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{localhost}}/auth/login",
+							"host": [
+								"{{localhost}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Получить отчёт",
 					"event": [
 						{
@@ -2269,22 +2310,22 @@
 								},
 								{
 									"key": "type",
-									"value": null,
+									"value": "income",
 									"disabled": true
 								},
 								{
 									"key": "category_id",
-									"value": null,
+									"value": "1",
 									"disabled": true
 								},
 								{
 									"key": "page_size",
-									"value": "30",
+									"value": "5",
 									"disabled": true
 								},
 								{
 									"key": "page",
-									"value": null,
+									"value": "1",
 									"disabled": true
 								}
 							]
@@ -2320,52 +2361,52 @@
 	],
 	"variable": [
 		{
-			"id": "1afa1edd-9778-46af-bde7-ad485cf1ae35",
+			"id": "adbd37eb-3fee-4916-a421-fb341adce5e0",
 			"key": "localhost",
 			"value": "127.0.0.1:5000"
 		},
 		{
-			"id": "747067b6-c521-4f1b-ba3f-6f40969bc79f",
+			"id": "a3f58c46-be7c-49fd-ac5f-a4946ee67cd7",
 			"key": "basic_password",
 			"value": "12345"
 		},
 		{
-			"id": "f92cd9dc-9675-4fce-a4f7-9e999e852978",
+			"id": "8599c266-8062-41a3-9ace-47d322ece391",
 			"key": "email",
 			"value": "user_one@hds.com"
 		},
 		{
-			"id": "2960877b-fe4f-42e4-91f3-f1e802d9a5ed",
+			"id": "396893a1-e9d4-4504-945c-88929782e9e7",
 			"key": "first_name",
 			"value": "Vasili"
 		},
 		{
-			"id": "47d60bf4-529a-4141-96b7-c7bc6d943df6",
+			"id": "92a6fcdd-3900-4f18-96f6-0d71767b3576",
 			"key": "last_name",
 			"value": "Petrov"
 		},
 		{
-			"id": "dc34aaa6-5602-4752-9024-c9a3fcef77cc",
+			"id": "08d3bee0-792a-4232-9723-c3c34c36190d",
 			"key": "account_id",
 			"value": "1"
 		},
 		{
-			"id": "9dbf3909-c443-476a-b4fe-f36e0c1a8b86",
+			"id": "0f22d9e9-dfbc-4196-a128-3465afa23000",
 			"key": "transaction_type",
 			"value": "income"
 		},
 		{
-			"id": "e3061114-9bac-4aa3-897e-c52193f1aab9",
+			"id": "6bce1bd8-0f0d-47da-960d-cc401ac31f84",
 			"key": "transaction_id",
 			"value": "1"
 		},
 		{
-			"id": "547f024c-9d8d-4960-89aa-8ecad523d7fb",
+			"id": "95e0747b-e289-4c46-abfa-7877908f993f",
 			"key": "category_id",
 			"value": "1"
 		},
 		{
-			"id": "147b0a54-579c-4bf4-b8d0-b3ffc8cd35cf",
+			"id": "35f0eded-17ce-494f-b496-c4a55cf579e4",
 			"key": "parent_id",
 			"value": "1"
 		}
